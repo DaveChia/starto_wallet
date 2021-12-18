@@ -8,10 +8,18 @@ class Wallet extends StatefulWidget {
 class _WalletState extends State<Wallet> {
   // const SecondRoute({Key? key}) : super(key: key);
 
+  static const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
+
   Color borderColor = Color(0xFFEBEDEF);
   Color backgroundColor = Color(0xFFFFFFFF);
   Color addButtonColor = Color(0xFF24324A);
-  String walletType = 'Cash';
+  Color hintTextColor = Color(0xFF9CA3AD);
+
+  String walletType = 'Select';
+  bool walletNameError = false;
+  bool walletTypeError = false;
+
+  String walletName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +57,15 @@ class _WalletState extends State<Wallet> {
                   Expanded(
                     child: TextField(
                       textAlign: TextAlign.right,
+                      onChanged: (content) {
+                        walletName = content;
+                      },
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Name your wallet',
                         hintStyle: TextStyle(
                           fontSize: 14.0,
+                          color: hintTextColor,
                         ),
                       ),
                     ),
@@ -61,6 +73,20 @@ class _WalletState extends State<Wallet> {
                 ],
               ),
             ),
+            if (walletNameError == true)
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 8),
+                height: 20,
+                width: double.infinity,
+                child: Text(
+                  'Add a name for easy recognition.',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
             Container(
               height: 50,
               decoration: BoxDecoration(
@@ -88,6 +114,7 @@ class _WalletState extends State<Wallet> {
                       child: Icon(Icons.arrow_downward),
                     ),
                     items: <String>[
+                      'Select',
                       'Cash',
                       'Debit Card',
                       'Bank Account',
@@ -100,6 +127,9 @@ class _WalletState extends State<Wallet> {
                           width: (width - 16 - 16) / 2,
                           child: Text(
                             value,
+                            style: value == 'Select'
+                                ? TextStyle(color: hintTextColor, fontSize: 14)
+                                : TextStyle(fontSize: 14),
                             textAlign: TextAlign.right, //this will do that
                           ),
                         ),
@@ -118,6 +148,20 @@ class _WalletState extends State<Wallet> {
                 ],
               ),
             ),
+            if (walletTypeError == true)
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 8),
+                height: 20,
+                width: double.infinity,
+                child: Text(
+                  'Wallet type is required',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
             Container(
               height: 50,
               decoration: BoxDecoration(
@@ -145,6 +189,7 @@ class _WalletState extends State<Wallet> {
                         border: InputBorder.none,
                         hintText: '0.00',
                         hintStyle: TextStyle(
+                          color: hintTextColor,
                           fontSize: 14.0,
                         ),
                       ),
@@ -218,6 +263,7 @@ class _WalletState extends State<Wallet> {
                           hintText: 'Select wallet',
                           hintStyle: TextStyle(
                             fontSize: 14.0,
+                            color: hintTextColor,
                           ),
                         ),
                       ),
@@ -258,6 +304,7 @@ class _WalletState extends State<Wallet> {
                           hintText: 'Select date',
                           hintStyle: TextStyle(
                             fontSize: 14.0,
+                            color: hintTextColor,
                           ),
                         ),
                       ),
@@ -294,6 +341,7 @@ class _WalletState extends State<Wallet> {
                           hintText: 'Select date',
                           hintStyle: TextStyle(
                             fontSize: 14.0,
+                            color: hintTextColor,
                           ),
                         ),
                       ),
@@ -338,7 +386,28 @@ class _WalletState extends State<Wallet> {
                       ),
                       elevation: 0,
                       color: addButtonColor,
-                      onPressed: () {},
+                      onPressed: () {
+                        print('save wallet');
+                        print(walletName);
+                        if (walletName == '') {
+                          setState(() {
+                            walletNameError = true;
+                          });
+                        } else {
+                          setState(() {
+                            walletNameError = false;
+                          });
+                        }
+                        if (walletType == 'Select') {
+                          setState(() {
+                            walletTypeError = true;
+                          });
+                        } else {
+                          setState(() {
+                            walletTypeError = false;
+                          });
+                        }
+                      },
                       child: Text(
                         'Add',
                         style: TextStyle(

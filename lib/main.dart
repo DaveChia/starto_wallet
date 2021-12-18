@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'views/wallet.dart' as Wallet;
+import 'views/create_wallet.dart' as CreateWallet;
 
 SharedPreferences sp;
 
@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Wallet.Wallet()),
+            MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
           );
         },
         // onPressed: _incrementCounter,
