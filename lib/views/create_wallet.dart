@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import './wallets.dart' as Wallets;
 
 class Wallet extends StatefulWidget {
   @override
@@ -6,8 +9,6 @@ class Wallet extends StatefulWidget {
 }
 
 class _WalletState extends State<Wallet> {
-  // const SecondRoute({Key? key}) : super(key: key);
-
   static const IconData warning = IconData(0xe6cb, fontFamily: 'MaterialIcons');
 
   Color borderColor = Color(0xFFEBEDEF);
@@ -21,6 +22,40 @@ class _WalletState extends State<Wallet> {
 
   String walletName = '';
 
+  _store_wallet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var new_wallet = {'name': walletName, 'type': walletType, 'balance': 0};
+
+    // Fetch and decode data
+    final String existing_wallets = await prefs.getString('wallets');
+
+    if (existing_wallets == null) {
+      var encodedData = [new_wallet];
+      var stringList = jsonEncode(encodedData);
+      prefs.setString('wallets', stringList);
+    } else {
+      var decodedData = jsonDecode(existing_wallets);
+      print('here');
+      print(decodedData);
+
+      for (int i = 0; i < decodedData?.length ?? 0; i++) {
+        if (decodedData[i]['name'] == new_wallet['name']) {
+          print('same name cannot');
+          return false;
+        }
+      }
+      decodedData.add(new_wallet);
+      var stringList = jsonEncode(decodedData);
+      prefs.setString('wallets', stringList);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Wallets.Wallets()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -28,6 +63,7 @@ class _WalletState extends State<Wallet> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text('New Wallet'),
+        centerTitle: true,
         elevation: 0,
       ),
       body: Center(
@@ -162,42 +198,43 @@ class _WalletState extends State<Wallet> {
                   ),
                 ),
               ),
-            Container(
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Wallet balance',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                      ),
+            if (walletType != 'Select')
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
                     ),
                   ),
-                  Expanded(
-                    child: TextField(
-                      textAlign: TextAlign.right,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '0.00',
-                        hintStyle: TextStyle(
-                          color: hintTextColor,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Wallet balance',
+                        style: TextStyle(
                           fontSize: 14.0,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: TextField(
+                        textAlign: TextAlign.right,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: '0.00',
+                          hintStyle: TextStyle(
+                            color: hintTextColor,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             if (walletType == 'Loan Balance')
               Container(
                 height: 50,
@@ -407,6 +444,11 @@ class _WalletState extends State<Wallet> {
                             walletTypeError = false;
                           });
                         }
+                        if (walletNameError == true ||
+                            walletTypeError == true) {
+                          return false;
+                        }
+                        _store_wallet();
                       },
                       child: Text(
                         'Add',
