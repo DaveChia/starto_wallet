@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import './create_transaction.dart' as CreateTransaction;
 
 class RepeatedTransactions extends StatefulWidget {
   @override
@@ -108,7 +109,12 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
               color: addIconColor,
             ),
             onPressed: () {
-              print('add transactions');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CreateTransaction.CreateTransaction()),
+              );
             },
           )
         ],
