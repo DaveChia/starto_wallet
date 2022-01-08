@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './wallets.dart' as Wallets;
 import './repeated_transactions.dart' as RepeatedTransactions;
+import './category.dart' as Category;
 
 class Settings extends StatelessWidget {
   @override
@@ -127,7 +128,11 @@ class Settings extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print("category was tapped");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Category.Category()),
+                    );
                   },
                   child: Container(
                     height: 48,

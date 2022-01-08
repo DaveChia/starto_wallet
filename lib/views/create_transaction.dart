@@ -246,14 +246,28 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               selectedWhen = 'today';
                             });
                           },
-                          child: Text(
-                            'Today',
-                            style: TextStyle(
-                              color: selectedWhen == 'today'
-                                  ? whenButtonActiveTextColor
-                                  : whenButtonInactiveTextColor,
-                              fontSize: 12.0,
-                            ),
+                          child: Row(
+                            children: [
+                              if (selectedWhen == 'today')
+                                Icon(
+                                  Icons.check,
+                                  color: addButtonColor,
+                                  size: 14,
+                                ),
+                              Container(
+                                width: 5,
+                                height: 36,
+                              ),
+                              Text(
+                                'Today',
+                                style: TextStyle(
+                                  color: selectedWhen == 'today'
+                                      ? whenButtonActiveTextColor
+                                      : whenButtonInactiveTextColor,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -278,14 +292,28 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               selectedWhen = 'yesterday';
                             });
                           },
-                          child: Text(
-                            'Yesterday',
-                            style: TextStyle(
-                              color: selectedWhen == 'yesterday'
-                                  ? whenButtonActiveTextColor
-                                  : whenButtonInactiveTextColor,
-                              fontSize: 12.0,
-                            ),
+                          child: Row(
+                            children: [
+                              if (selectedWhen == 'yesterday')
+                                Icon(
+                                  Icons.check,
+                                  color: addButtonColor,
+                                  size: 14,
+                                ),
+                              Container(
+                                width: 5,
+                                height: 36,
+                              ),
+                              Text(
+                                'Yesterday',
+                                style: TextStyle(
+                                  color: selectedWhen == 'yesterday'
+                                      ? whenButtonActiveTextColor
+                                      : whenButtonInactiveTextColor,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -310,14 +338,28 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               selectedWhen = 'custom';
                             });
                           },
-                          child: Text(
-                            'Custom',
-                            style: TextStyle(
-                              color: selectedWhen == 'custom'
-                                  ? whenButtonActiveTextColor
-                                  : whenButtonInactiveTextColor,
-                              fontSize: 12.0,
-                            ),
+                          child: Row(
+                            children: [
+                              if (selectedWhen == 'custom')
+                                Icon(
+                                  Icons.check,
+                                  color: addButtonColor,
+                                  size: 14,
+                                ),
+                              Container(
+                                width: 5,
+                                height: 36,
+                              ),
+                              Text(
+                                'Custom',
+                                style: TextStyle(
+                                  color: selectedWhen == 'custom'
+                                      ? whenButtonActiveTextColor
+                                      : whenButtonInactiveTextColor,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
