@@ -24,7 +24,13 @@ class _WalletsState extends State<Wallets> {
 
   _loadWallets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var wallets = jsonDecode(prefs.getString('wallets'));
+
+    var wallets = [];
+
+    if (prefs.getString('wallets') != null) {
+      wallets = jsonDecode(prefs.getString('wallets'));
+    }
+
     List cash_wallets_local = [];
     List debit_cards_wallets_local = [];
     List bank_wallets_local = [];

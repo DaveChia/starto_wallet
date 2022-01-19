@@ -13,7 +13,9 @@ class Category extends StatefulWidget {
 class _CategoryState extends State<Category> {
   List expense_categories = [];
   List income_categories = [];
-  List transfer_categories = [];
+  List transfer_categories = [
+    {'name': 'Transfer', 'type': 'transfer'}
+  ];
   List active_categories = [];
 
   bool isEditMode = false;
@@ -31,6 +33,7 @@ class _CategoryState extends State<Category> {
   Color whenButtonActiveTextColor = Color(0xFF24324A);
   Color addIconColor = Color(0xFF616C7D);
   Color activeCategoryColor = Color(0xFF3A475C);
+  Color inActiveCategoryColor = Color(0xFFEBEDEF);
   Color deleteButtonColor = Color(0xFFE36565);
   var formatter = NumberFormat('#,##,###.00#');
 
@@ -43,34 +46,69 @@ class _CategoryState extends State<Category> {
 
   _loadCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<Object> expense_categories_local =
-        jsonDecode(prefs.getString('expense_categories'));
 
-    List<Object> income_categories_local =
-        jsonDecode(prefs.getString('income_categories'));
+    List<Object> expense_categories_local = [];
+    List<Object> income_categories_local = [];
 
-    // List<Object> expense_categories_local = [
-    //   {
-    //     'type': 'expense',
-    //     'name': 'food',
-    //   },
-    //   {
-    //     'type': 'expense',
-    //     'name': 'household',
-    //   },
-    //   {
-    //     'type': 'expense',
-    //     'name': 'transport',
-    //   },
-    //   {
-    //     'type': 'expense',
-    //     'name': 'shopping',
-    //   },
-    //   {
-    //     'type': 'expense',
-    //     'name': 'travel',
-    //   }
-    // ];
+    if (prefs.getString('expense_categories') == null) {
+      expense_categories_local = [];
+    } else {
+      expense_categories_local =
+          jsonDecode(prefs.getString('expense_categories'));
+    }
+
+    if (prefs.getString('income_categories') == null) {
+      income_categories_local = [];
+    } else {
+      income_categories_local =
+          jsonDecode(prefs.getString('income_categories'));
+    }
+
+    //  Set default categories
+    if (expense_categories_local.length == 0) {
+      expense_categories_local = [
+        {'name': 'Auto & Parking', 'type': 'expense'},
+        {'name': 'bills', 'type': 'expense'},
+        {'name': 'business', 'type': 'expense'},
+        {'name': 'Cash & Cheque', 'type': 'expense'},
+        {'name': 'education', 'type': 'expense'},
+        {'name': 'entertainment', 'type': 'expense'},
+        {'name': 'Gift & Charity', 'type': 'expense'},
+        {'name': 'grocery', 'type': 'expense'},
+        {'name': 'family', 'type': 'expense'},
+        {'name': 'Food & Drink', 'type': 'expense'},
+        {'name': 'fuel', 'type': 'expense'},
+        {'name': 'Health & Medical', 'type': 'expense'},
+        {'name': 'insurance', 'type': 'expense'},
+        {'name': 'kid', 'type': 'expense'},
+        {'name': 'Personal Care', 'type': 'expense'},
+        {'name': 'pet', 'type': 'expense'},
+        {'name': 'rental', 'type': 'expense'},
+        {'name': 'shopping', 'type': 'expense'},
+        {'name': 'subscription', 'type': 'expense'},
+        {'name': 'tax', 'type': 'expense'},
+        {'name': 'taxi', 'type': 'expense'},
+        {'name': 'Public Transport', 'type': 'expense'},
+        {'name': 'travel', 'type': 'expense'},
+      ];
+
+      var stringList = jsonEncode(expense_categories_local);
+      prefs.setString('expense_categories', stringList);
+    }
+
+    if (income_categories_local.length == 0) {
+      income_categories_local = [
+        {'name': 'bonus', 'type': 'income'},
+        {'name': 'deposit', 'type': 'income'},
+        {'name': 'investment', 'type': 'income'},
+        {'name': 'refund', 'type': 'income'},
+        {'name': 'salary', 'type': 'income'},
+        {'name': 'Other Income', 'type': 'income'}
+      ];
+
+      var stringList = jsonEncode(income_categories_local);
+      prefs.setString('income_categories', stringList);
+    }
 
     setState(() {
       expense_categories = expense_categories_local;
@@ -180,72 +218,76 @@ class _CategoryState extends State<Category> {
       body: Center(
         child: Column(
           children: [
-            Container(
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
+            if (isEditMode == false)
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
+                    ),
                   ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 15,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      onChanged: (content) {
-                        if (content.length > 0) {
-                          isFilterSearchMode = true;
-                        } else {
-                          isFilterSearchMode = false;
-                        }
-
-                        List filterCategory = [];
-
-                        switch (selectedCategory) {
-                          case 'expense':
-                            filterCategory = expense_categories;
-                            break;
-                          case 'income':
-                            filterCategory = income_categories;
-                            break;
-                        }
-
-                        if (content.length < 4) {
-                          active_categories = filterCategory;
-                          filteredSearchString = '';
-                          setState(() {});
-                          return false;
-                        }
-                        filteredSearchString = content;
-                        active_categories = [];
-                        for (var i = 0; i < filterCategory.length; i++) {
-                          if (filterCategory[i]['name'].contains(content)) {
-                            active_categories.add(filterCategory[i]);
+                child: Row(
+                  children: [
+                    Container(
+                      width: 15,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        onChanged: (content) {
+                          if (content.length > 0) {
+                            isFilterSearchMode = true;
+                          } else {
+                            isFilterSearchMode = false;
                           }
-                        }
 
-                        setState(() {});
-                      },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Search',
-                        hintStyle: TextStyle(
-                          fontSize: 14.0,
+                          List filterCategory = [];
+
+                          switch (selectedCategory) {
+                            case 'expense':
+                              filterCategory = expense_categories;
+                              break;
+                            case 'income':
+                              filterCategory = income_categories;
+                              break;
+                            case 'transfer':
+                              filterCategory = transfer_categories;
+                              break;
+                          }
+
+                          if (content.length < 4) {
+                            active_categories = filterCategory;
+                            filteredSearchString = '';
+                            setState(() {});
+                            return false;
+                          }
+                          filteredSearchString = content;
+                          active_categories = [];
+                          for (var i = 0; i < filterCategory.length; i++) {
+                            if (filterCategory[i]['name'].contains(content)) {
+                              active_categories.add(filterCategory[i]);
+                            }
+                          }
+
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Search',
+                          hintStyle: TextStyle(
+                            fontSize: 14.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    width: 15,
-                  ),
-                ],
+                    Container(
+                      width: 15,
+                    ),
+                  ],
+                ),
               ),
-            ),
             Container(
               height: 50,
               child: Row(children: [
@@ -262,10 +304,10 @@ class _CategoryState extends State<Category> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            width: 2.0,
+                            width: selectedCategory == 'expense' ? 2 : 0.5,
                             color: selectedCategory == 'expense'
                                 ? activeCategoryColor
-                                : backgroundColor,
+                                : inActiveCategoryColor,
                           ),
                         ),
                       ),
@@ -297,10 +339,10 @@ class _CategoryState extends State<Category> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            width: 2.0,
+                            width: selectedCategory == 'income' ? 2 : 0.5,
                             color: selectedCategory == 'income'
                                 ? activeCategoryColor
-                                : backgroundColor,
+                                : inActiveCategoryColor,
                           ),
                         ),
                       ),
@@ -325,7 +367,7 @@ class _CategoryState extends State<Category> {
                       onTap: () {
                         setState(() {
                           selectedCategory = 'transfer';
-                          active_categories = [];
+                          active_categories = transfer_categories;
                         });
                       },
                       child: Container(
@@ -333,10 +375,10 @@ class _CategoryState extends State<Category> {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              width: 2.0,
+                              width: selectedCategory == 'transfer' ? 2 : 0.5,
                               color: selectedCategory == 'transfer'
                                   ? activeCategoryColor
-                                  : backgroundColor,
+                                  : inActiveCategoryColor,
                             ),
                           ),
                         ),

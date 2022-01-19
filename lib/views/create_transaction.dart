@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateTransaction extends StatefulWidget {
   @override
   _CreateTransactionState createState() => _CreateTransactionState();
+}
+
+class Category {
+  final String name;
+  final String type;
+
+  Category({@required this.name, @required this.type});
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      name: json['name'],
+      type: json['type'],
+    );
+  }
 }
 
 class _CreateTransactionState extends State<CreateTransaction> {
@@ -16,8 +32,100 @@ class _CreateTransactionState extends State<CreateTransaction> {
   Color whenButtonInactiveTextColor = Color(0xFF9CA3AD);
   Color whenButtonActiveColor = Color(0xFF24324A);
   Color whenButtonActiveTextColor = Color(0xFF24324A);
+  List<Category> all_categories = [
+    Category(
+      name: 'Select',
+      type: '-',
+    ),
+    Category(
+      name: 'transfer',
+      type: 'transfer',
+    ),
+  ];
+
+  Category transaction_category;
 
   var formatter = NumberFormat('#,##,###.00#');
+
+  @override
+  void initState() {
+    super.initState();
+    print('333 I AM STARTING create transaction');
+    _loadCategories();
+  }
+
+  _loadCategories() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    List expense_categories_local = [];
+    List income_categories_local = [];
+
+    if (prefs.getString('expense_categories') == null) {
+      expense_categories_local = [
+        {'name': 'Auto & Parking', 'type': 'expense'},
+        {'name': 'bills', 'type': 'expense'},
+        {'name': 'business', 'type': 'expense'},
+        {'name': 'Cash & Cheque', 'type': 'expense'},
+        {'name': 'education', 'type': 'expense'},
+        {'name': 'entertainment', 'type': 'expense'},
+        {'name': 'Gift & Charity', 'type': 'expense'},
+        {'name': 'grocery', 'type': 'expense'},
+        {'name': 'family', 'type': 'expense'},
+        {'name': 'Food & Drink', 'type': 'expense'},
+        {'name': 'fuel', 'type': 'expense'},
+        {'name': 'Health & Medical', 'type': 'expense'},
+        {'name': 'insurance', 'type': 'expense'},
+        {'name': 'kid', 'type': 'expense'},
+        {'name': 'Personal Care', 'type': 'expense'},
+        {'name': 'pet', 'type': 'expense'},
+        {'name': 'rental', 'type': 'expense'},
+        {'name': 'shopping', 'type': 'expense'},
+        {'name': 'subscription', 'type': 'expense'},
+        {'name': 'tax', 'type': 'expense'},
+        {'name': 'taxi', 'type': 'expense'},
+        {'name': 'Public Transport', 'type': 'expense'},
+        {'name': 'travel', 'type': 'expense'},
+      ];
+      var stringList = jsonEncode(expense_categories_local);
+      prefs.setString('expense_categories', stringList);
+    } else {
+      expense_categories_local =
+          jsonDecode(prefs.getString('expense_categories'));
+    }
+
+    if (prefs.getString('income_categories') == null) {
+      income_categories_local = [
+        {'name': 'bonus', 'type': 'income'},
+        {'name': 'deposit', 'type': 'income'},
+        {'name': 'investment', 'type': 'income'},
+        {'name': 'refund', 'type': 'income'},
+        {'name': 'salary', 'type': 'income'},
+        {'name': 'Other Income', 'type': 'income'}
+      ];
+      var stringList = jsonEncode(income_categories_local);
+      prefs.setString('income_categories', stringList);
+    } else {
+      income_categories_local =
+          jsonDecode(prefs.getString('income_categories'));
+    }
+
+    List<Category> expense_categories_local2 = expense_categories_local
+        .map((category) =>
+            Category(name: category['name'], type: category['type']))
+        .toList();
+
+    List<Category> income_categories_local2 = income_categories_local
+        .map((category) =>
+            Category(name: category['name'], type: category['type']))
+        .toList();
+
+    setState(() {
+      all_categories =
+          all_categories + expense_categories_local2 + income_categories_local2;
+
+      transaction_category = all_categories[0];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,26 +210,23 @@ class _CreateTransactionState extends State<CreateTransaction> {
                         ),
                       ),
                       Expanded(
-                          child: DropdownButton<String>(
+                          child: DropdownButton<Category>(
                         icon: Visibility(
                           visible: false,
                           child: Icon(Icons.arrow_downward),
                         ),
-                        items: <String>[
-                          'Select',
-                          'Cash',
-                          'Debit Card',
-                          'Bank Account',
-                          'Credit Card',
-                          'Loan Account'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
+                        items: all_categories.map((Category value) {
+                          return DropdownMenuItem<Category>(
                             value: value,
                             child: Container(
                               width: (width - 16 - 16) / 2,
                               child: Text(
-                                value,
-                                style: value == 'Select'
+                                (value.name == 'Select')
+                                    ? value.name
+                                    : "${value.type.toString()[0].toUpperCase()}${value.type.toString().substring(1)}" +
+                                        '/' +
+                                        "${value.name.toString()[0].toUpperCase()}${value.name.toString().substring(1)}",
+                                style: value.name == 'Select'
                                     ? TextStyle(
                                         color: hintTextColor, fontSize: 14)
                                     : TextStyle(fontSize: 14),
@@ -131,14 +236,14 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           );
                         }).toList(),
                         onChanged: (value) {
-                          // setState(() {
-                          //   walletType = value;
-                          // });
-                          // print('Changed wallet type');
-                          // print(walletType);
+                          setState(() {
+                            transaction_category = value;
+                          });
+                          print('Changed transaction_category');
+                          print(transaction_category);
                         },
                         underline: SizedBox(),
-                        value: 'Select',
+                        value: transaction_category,
                       )),
                     ],
                   ),
