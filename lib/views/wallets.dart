@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './create_wallet.dart' as CreateWallet;
+import './create_wallet_landing.dart' as CreateWalletLand;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -92,7 +92,8 @@ class _WalletsState extends State<Wallets> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
+                MaterialPageRoute(
+                    builder: (context) => CreateWalletLand.CreateWalletLand()),
               );
             },
           )
