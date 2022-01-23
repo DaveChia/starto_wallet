@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import './wallets.dart' as Wallets;
+import 'package:intl/intl.dart';
 
 class Wallet extends StatefulWidget {
   String type;
@@ -26,8 +27,130 @@ class _WalletState extends State<Wallet> {
   bool walletNameError = false;
   bool walletTypeError = false;
   String walletTypeName;
-
+  String creditCardPaymentDay = 'Select date';
+  String creditCardStatementDay = 'Select date';
   String walletName = '';
+  String creditCardUpcomingBillingCycle = '-';
+  String creditCardNextBillingCycle = '-';
+
+  String next_mon;
+  int current_mon_last_day;
+  int next_mon_last_day;
+
+  _calculate_credit_card_statement_date() {
+    print(creditCardStatementDay);
+    if (creditCardStatementDay == 'Select date') {
+      creditCardUpcomingBillingCycle = '-';
+      creditCardNextBillingCycle = '-';
+      return false;
+    }
+
+    String creditCardStatementDayTrim =
+        creditCardStatementDay.replaceAll("th", "");
+    creditCardStatementDayTrim =
+        creditCardStatementDayTrim.replaceAll("st", "");
+    creditCardStatementDayTrim =
+        creditCardStatementDayTrim.replaceAll("nd", "");
+    creditCardStatementDayTrim =
+        creditCardStatementDayTrim.replaceAll("rd", "");
+    int creditCardStatementDayInt = int.parse(creditCardStatementDayTrim);
+
+    List months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
+    int currentMonthInt = DateTime.now().month + 12;
+
+    DateTime current_cycle_start_date = DateTime(
+        DateTime.now().year, currentMonthInt, creditCardStatementDayInt);
+
+    DateTime current_cycle_end_date = DateTime(DateTime.now().year,
+        currentMonthInt + 1, creditCardStatementDayInt - 1);
+
+    if (creditCardStatementDayInt > 28) {
+      if (current_cycle_start_date.month > currentMonthInt) {
+        print('changing12');
+        current_cycle_start_date =
+            DateTime(DateTime.now().year, currentMonthInt + 1, 0);
+      }
+    }
+
+    // print(current_cycle_start_date.month);
+    // print(current_cycle_end_date.month);
+    if (current_cycle_end_date.month - current_cycle_start_date.month > 1) {
+      print('change');
+      current_cycle_end_date =
+          DateTime(DateTime.now().year, currentMonthInt + 2, 0);
+    }
+
+    print(current_cycle_start_date);
+    print(current_cycle_end_date);
+    print('end0');
+
+    DateTime next_cycle_start_date = DateTime(
+        DateTime.now().year, currentMonthInt + 1, creditCardStatementDayInt);
+
+    DateTime next_cycle_end_date = DateTime(DateTime.now().year,
+        currentMonthInt + 2, creditCardStatementDayInt - 1);
+
+    if (creditCardStatementDayInt > 28) {
+      print('kiki');
+      print(next_cycle_start_date.month);
+      print(next_cycle_end_date.month);
+      print(current_cycle_end_date.month);
+      if (next_cycle_start_date.month > current_cycle_end_date.month) {
+        print('changing2');
+        next_cycle_start_date = current_cycle_end_date;
+        next_cycle_end_date = DateTime(next_cycle_start_date.year,
+            next_cycle_start_date.month + 1, creditCardStatementDayInt - 1);
+      }
+      if (next_cycle_end_date.month - next_cycle_start_date.month > 1) {
+        print('changing3');
+        next_cycle_end_date = DateTime(
+            next_cycle_start_date.year, next_cycle_start_date.month + 2, 0);
+      }
+    }
+
+    print(next_cycle_start_date);
+    print(next_cycle_end_date);
+    print('end1');
+
+    String currentCycleStartDay = current_cycle_start_date.day.toString();
+    String currentCycleStartMonth = months[current_cycle_start_date.month - 1];
+    String currentCycleEndDay = current_cycle_end_date.day.toString();
+    String currentCycleEndMonth = months[current_cycle_end_date.month - 1];
+
+    String nextCycleStartDay = next_cycle_start_date.day.toString();
+    String nextCycleStartMonth = months[next_cycle_start_date.month - 1];
+    String nextCycleEndDay = next_cycle_end_date.day.toString();
+    String nextCycleEndMonth = months[next_cycle_end_date.month - 1];
+
+    creditCardUpcomingBillingCycle = currentCycleStartDay +
+        ' ' +
+        currentCycleStartMonth +
+        ' - ' +
+        currentCycleEndDay +
+        ' ' +
+        currentCycleEndMonth;
+    creditCardNextBillingCycle = nextCycleStartDay +
+        ' ' +
+        nextCycleStartMonth +
+        ' - ' +
+        nextCycleEndDay +
+        ' ' +
+        nextCycleEndMonth;
+  }
 
   _store_wallet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -308,18 +431,71 @@ class _WalletState extends State<Wallet> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
-                        textAlign: TextAlign.right,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Select date',
-                          hintStyle: TextStyle(
-                            fontSize: 14.0,
-                            color: hintTextColor,
-                          ),
-                        ),
+                        child: DropdownButton<String>(
+                      icon: Visibility(
+                        visible: false,
+                        child: Icon(Icons.arrow_downward),
                       ),
-                    ),
+                      items: <String>[
+                        'Select date',
+                        '1st',
+                        '2nd',
+                        '3rd',
+                        '4th',
+                        '5th',
+                        '6th',
+                        '7th',
+                        '8th',
+                        '9th',
+                        '10th',
+                        '11th',
+                        '12th',
+                        '13th',
+                        '14th',
+                        '15th',
+                        '16th',
+                        '17th',
+                        '18th',
+                        '19th',
+                        '20th',
+                        '21th',
+                        '22th',
+                        '23th',
+                        '24th',
+                        '25th',
+                        '26th',
+                        '27th',
+                        '28th',
+                        '29th',
+                        '30th',
+                        '31th',
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Container(
+                            width: (width - 16 - 16) / 2,
+                            child: Text(
+                              value == 'Select date'
+                                  ? value
+                                  : value + ' of every month',
+                              style: value == 'Select date'
+                                  ? TextStyle(
+                                      color: hintTextColor, fontSize: 14)
+                                  : TextStyle(fontSize: 14),
+                              textAlign: TextAlign.right, //this will do that
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          creditCardStatementDay = value;
+                          _calculate_credit_card_statement_date();
+                        });
+                      },
+                      underline: SizedBox(),
+                      value: creditCardStatementDay,
+                    )),
                   ],
                 ),
               ),
@@ -364,18 +540,70 @@ class _WalletState extends State<Wallet> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
-                        textAlign: TextAlign.right,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Select date',
-                          hintStyle: TextStyle(
-                            fontSize: 14.0,
-                            color: hintTextColor,
-                          ),
-                        ),
+                        child: DropdownButton<String>(
+                      icon: Visibility(
+                        visible: false,
+                        child: Icon(Icons.arrow_downward),
                       ),
-                    ),
+                      items: <String>[
+                        'Select date',
+                        '1st',
+                        '2nd',
+                        '3rd',
+                        '4th',
+                        '5th',
+                        '6th',
+                        '7th',
+                        '8th',
+                        '9th',
+                        '10th',
+                        '11th',
+                        '12th',
+                        '13th',
+                        '14th',
+                        '15th',
+                        '16th',
+                        '17th',
+                        '18th',
+                        '19th',
+                        '20th',
+                        '21th',
+                        '22th',
+                        '23th',
+                        '24th',
+                        '25th',
+                        '26th',
+                        '27th',
+                        '28th',
+                        '29th',
+                        '30th',
+                        '31th',
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Container(
+                            width: (width - 16 - 16) / 2,
+                            child: Text(
+                              value == 'Select date'
+                                  ? value
+                                  : value + ' of every month',
+                              style: value == 'Select date'
+                                  ? TextStyle(
+                                      color: hintTextColor, fontSize: 14)
+                                  : TextStyle(fontSize: 14),
+                              textAlign: TextAlign.right, //this will do that
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          creditCardPaymentDay = value;
+                        });
+                      },
+                      underline: SizedBox(),
+                      value: creditCardPaymentDay,
+                    )),
                   ],
                 ),
               ),
@@ -409,7 +637,7 @@ class _WalletState extends State<Wallet> {
                         Container(
                           alignment: Alignment.bottomRight,
                           child: Text(
-                            '1 Dec - 31 Dec',
+                            creditCardUpcomingBillingCycle,
                             style: TextStyle(
                               color: billCycleDateColor,
                               fontSize: 12.0,
@@ -440,7 +668,7 @@ class _WalletState extends State<Wallet> {
                         Container(
                           alignment: Alignment.bottomRight,
                           child: Text(
-                            '1 Jan - 31 Jan',
+                            creditCardNextBillingCycle,
                             style: TextStyle(
                               color: billCycleDateColor,
                               fontSize: 12.0,
