@@ -80,23 +80,25 @@ class _WalletState extends State<Wallet> {
 
     if (creditCardStatementDayInt > 28) {
       if (current_cycle_start_date.month > currentMonthInt) {
-        print('changing12');
         current_cycle_start_date =
             DateTime(DateTime.now().year, currentMonthInt + 1, 0);
+      }
+
+      if (current_cycle_end_date.month - current_cycle_start_date.month > 1) {
+        DateTime lastday =
+            DateTime(DateTime.now().year, currentMonthInt + 2, 0);
+
+        current_cycle_end_date =
+            DateTime(lastday.year, lastday.month, lastday.day - 1);
       }
     }
 
     // print(current_cycle_start_date.month);
     // print(current_cycle_end_date.month);
     if (current_cycle_end_date.month - current_cycle_start_date.month > 1) {
-      print('change');
       current_cycle_end_date =
           DateTime(DateTime.now().year, currentMonthInt + 2, 0);
     }
-
-    print(current_cycle_start_date);
-    print(current_cycle_end_date);
-    print('end0');
 
     DateTime next_cycle_start_date = DateTime(
         DateTime.now().year, currentMonthInt + 1, creditCardStatementDayInt);
@@ -105,26 +107,22 @@ class _WalletState extends State<Wallet> {
         currentMonthInt + 2, creditCardStatementDayInt - 1);
 
     if (creditCardStatementDayInt > 28) {
-      print('kiki');
-      print(next_cycle_start_date.month);
-      print(next_cycle_end_date.month);
-      print(current_cycle_end_date.month);
       if (next_cycle_start_date.month > current_cycle_end_date.month) {
-        print('changing2');
-        next_cycle_start_date = current_cycle_end_date;
+        print('I AM HEREE22');
+        print(current_cycle_end_date);
+        print(next_cycle_start_date);
+        next_cycle_start_date = DateTime(
+            current_cycle_end_date.year, current_cycle_end_date.month + 1, 0);
+
         next_cycle_end_date = DateTime(next_cycle_start_date.year,
             next_cycle_start_date.month + 1, creditCardStatementDayInt - 1);
       }
       if (next_cycle_end_date.month - next_cycle_start_date.month > 1) {
-        print('changing3');
+        print('I amhere 33');
         next_cycle_end_date = DateTime(
             next_cycle_start_date.year, next_cycle_start_date.month + 2, 0);
       }
     }
-
-    print(next_cycle_start_date);
-    print(next_cycle_end_date);
-    print('end1');
 
     String currentCycleStartDay = current_cycle_start_date.day.toString();
     String currentCycleStartMonth = months[current_cycle_start_date.month - 1];
