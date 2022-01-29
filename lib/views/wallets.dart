@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './create_wallet_landing.dart' as CreateWalletLand;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import './settings.dart' as Setting;
 
 class Wallets extends StatefulWidget {
   @override
@@ -10,10 +11,16 @@ class Wallets extends StatefulWidget {
 
 class _WalletsState extends State<Wallets> {
   List cash_wallets = [];
-  List debit_cards_wallets = [];
   List bank_wallets = [];
   List credit_cards_wallets = [];
   List loan_wallets = [];
+  List insurance_wallets = [];
+  List investment_wallets = [];
+
+  bool isEditMode = false;
+
+  Color deleteButtonColor = Color(0xFFE36565);
+  Color whenButtonActiveColor = Color(0xFF24324A);
 
   @override
   void initState() {
@@ -25,44 +32,47 @@ class _WalletsState extends State<Wallets> {
   _loadWallets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var wallets = [];
-
-    if (prefs.getString('wallets') != null) {
-      wallets = jsonDecode(prefs.getString('wallets'));
-    }
-
-    List cash_wallets_local = [];
-    List debit_cards_wallets_local = [];
     List bank_wallets_local = [];
+    List cash_wallets_local = [];
     List credit_cards_wallets_local = [];
     List loan_wallets_local = [];
+    List insurance_wallets_local = [];
+    List investment_wallets_local = [];
 
-    for (int i = 0; i < wallets?.length ?? 0; i++) {
-      switch (wallets[i]['type']) {
-        case 'Cash':
-          cash_wallets_local.add((wallets[i]));
-          break;
-        case 'Debit Card':
-          debit_cards_wallets_local.add((wallets[i]));
-          break;
-        case 'Bank Account':
-          bank_wallets_local.add((wallets[i]));
-          break;
-        case 'Credit Card':
-          credit_cards_wallets_local.add((wallets[i]));
-          break;
-        case 'Loan Account':
-          loan_wallets_local.add((wallets[i]));
-          break;
-      }
+    if (prefs.getString('bank_account_wallets') != null) {
+      bank_wallets_local = jsonDecode(prefs.getString('bank_account_wallets'));
+    }
+
+    if (prefs.getString('cash_wallets') != null) {
+      cash_wallets_local = jsonDecode(prefs.getString('cash_wallets'));
+    }
+
+    if (prefs.getString('credit_card_wallets') != null) {
+      credit_cards_wallets_local =
+          jsonDecode(prefs.getString('credit_card_wallets'));
+    }
+
+    if (prefs.getString('loan_wallets') != null) {
+      loan_wallets_local = jsonDecode(prefs.getString('loan_wallets'));
+    }
+
+    if (prefs.getString('insurance_wallets') != null) {
+      insurance_wallets_local =
+          jsonDecode(prefs.getString('insurance_wallets'));
+    }
+
+    if (prefs.getString('investment_wallets') != null) {
+      investment_wallets_local =
+          jsonDecode(prefs.getString('investment_wallets'));
     }
 
     setState(() {
       cash_wallets = cash_wallets_local;
-      debit_cards_wallets = debit_cards_wallets_local;
       bank_wallets = bank_wallets_local;
       credit_cards_wallets = credit_cards_wallets_local;
       loan_wallets = loan_wallets_local;
+      insurance_wallets = insurance_wallets_local;
+      investment_wallets = investment_wallets_local;
     });
   }
 
@@ -83,20 +93,50 @@ class _WalletsState extends State<Wallets> {
         centerTitle: true,
         title: Text('Wallets'),
         elevation: 0,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: addIconColor,
-            ),
-            onPressed: () {
-              Navigator.push(
+        leading: IconButton(
+          onPressed: () {
+            if (isEditMode) {
+              setState(() {
+                isEditMode = false;
+              });
+            } else {
+              Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => CreateWalletLand.CreateWalletLand()),
+                MaterialPageRoute(builder: (context) => Setting.Settings()),
+                (route) => false,
               );
-            },
-          )
+            }
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+        actions: <Widget>[
+          if (isEditMode == true)
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: addIconColor,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          CreateWalletLand.CreateWalletLand()),
+                );
+              },
+            ),
+          if (isEditMode == false)
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: addIconColor,
+              ),
+              onPressed: () {
+                setState(() {
+                  isEditMode = !isEditMode;
+                });
+              },
+            ),
         ],
       ),
       body: Center(
@@ -105,7 +145,8 @@ class _WalletsState extends State<Wallets> {
           child: SingleChildScrollView(
             child: Stack(children: [
               if (cash_wallets.length == 0 &&
-                  debit_cards_wallets.length == 0 &&
+                  insurance_wallets.length == 0 &&
+                  investment_wallets.length == 0 &&
                   bank_wallets.length == 0 &&
                   credit_cards_wallets.length == 0 &&
                   loan_wallets.length == 0)
@@ -117,7 +158,8 @@ class _WalletsState extends State<Wallets> {
                   width: 184,
                 ),
               if (cash_wallets.length > 0 ||
-                  debit_cards_wallets.length > 0 ||
+                  insurance_wallets.length > 0 ||
+                  investment_wallets.length > 0 ||
                   bank_wallets.length > 0 ||
                   credit_cards_wallets.length > 0 ||
                   loan_wallets.length > 0)
@@ -146,73 +188,84 @@ class _WalletsState extends State<Wallets> {
                           ),
                         ),
                       ),
-                      for (var i in cash_wallets)
-                        Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
+                      for (var i = 0; i < cash_wallets.length; i++)
+                        GestureDetector(
+                          onTap: () {
+                            print(i);
+                          },
+                          child: Container(
+                            height: 48,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 1.0,
+                                  color: borderColor,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Text(
-                            i['name'].toString(),
-                            style: TextStyle(
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                              fontSize: 14.0,
+                            child: Row(
+                              children: [
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        showAlertDialog(
+                                            context,
+                                            i,
+                                            cash_wallets[i]['name'],
+                                            cash_wallets[i]['type']);
+                                      },
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.remove_circle_outlined,
+                                        color: deleteButtonColor,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 18,
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    "${cash_wallets[i]['name'][0].toUpperCase()}${cash_wallets[i]['name'].substring(1)}",
+                                    style: TextStyle(
+                                      height:
+                                          1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                      fontSize: 14.0,
+                                    ),
+                                  ),
+                                ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.edit_outlined,
+                                        color: hintTextColor,
+                                        size: 18,
+                                      ),
+                                      onPressed: () {
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) =>
+                                        //           CreateCategory.Category(
+                                        //               type: 'edit')),
+                                        // );
+                                      },
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
-                    ]),
-                  if (debit_cards_wallets.length > 0)
-                    Column(children: [
-                      Container(
-                        height: 32,
-                      ),
-                      Container(
-                        height: 28,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1.0,
-                              color: borderColor,
-                            ),
-                          ),
-                        ),
-                        width: double.infinity,
-                        child: Text(
-                          'Debit Card',
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            color: hintTextColor,
-                          ),
-                        ),
-                      ),
-                      for (var i in debit_cards_wallets)
-                        Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            i['name'].toString(),
-                            style: TextStyle(
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
+                        )
                     ]),
                   if (bank_wallets.length > 0)
                     Column(children: [
@@ -238,24 +291,81 @@ class _WalletsState extends State<Wallets> {
                           ),
                         ),
                       ),
-                      for (var i in bank_wallets)
-                        Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
+                      for (var i = 0; i < bank_wallets.length; i++)
+                        GestureDetector(
+                          onTap: () {
+                            print(i);
+                          },
+                          child: Container(
+                            height: 48,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 1.0,
+                                  color: borderColor,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Text(
-                            i['name'].toString(),
-                            style: TextStyle(
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                              fontSize: 14.0,
+                            child: Row(
+                              children: [
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        showAlertDialog(
+                                            context,
+                                            i,
+                                            bank_wallets[i]['name'],
+                                            bank_wallets[i]['type']);
+                                      },
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.remove_circle_outlined,
+                                        color: deleteButtonColor,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 18,
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    "${bank_wallets[i]['name'][0].toUpperCase()}${bank_wallets[i]['name'].substring(1)}",
+                                    style: TextStyle(
+                                      height:
+                                          1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                      fontSize: 14.0,
+                                    ),
+                                  ),
+                                ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.edit_outlined,
+                                        color: hintTextColor,
+                                        size: 18,
+                                      ),
+                                      onPressed: () {
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) =>
+                                        //           CreateCategory.Category(
+                                        //               type: 'edit')),
+                                        // );
+                                      },
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
@@ -284,27 +394,84 @@ class _WalletsState extends State<Wallets> {
                           ),
                         ),
                       ),
-                      for (var i in credit_cards_wallets)
-                        Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
+                      for (var i = 0; i < credit_cards_wallets.length; i++)
+                        GestureDetector(
+                          onTap: () {
+                            print(i);
+                          },
+                          child: Container(
+                            height: 48,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 1.0,
+                                  color: borderColor,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Text(
-                            i['name'].toString(),
-                            style: TextStyle(
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                              fontSize: 14.0,
+                            child: Row(
+                              children: [
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        showAlertDialog(
+                                            context,
+                                            i,
+                                            credit_cards_wallets[i]['name'],
+                                            credit_cards_wallets[i]['type']);
+                                      },
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.remove_circle_outlined,
+                                        color: deleteButtonColor,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 18,
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    "${credit_cards_wallets[i]['name'][0].toUpperCase()}${credit_cards_wallets[i]['name'].substring(1)}",
+                                    style: TextStyle(
+                                      height:
+                                          1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                      fontSize: 14.0,
+                                    ),
+                                  ),
+                                ),
+                                if (isEditMode == true)
+                                  Container(
+                                    width: 17,
+                                    height: double.infinity,
+                                    child: IconButton(
+                                      padding: new EdgeInsets.all(0.0),
+                                      icon: Icon(
+                                        Icons.edit_outlined,
+                                        color: hintTextColor,
+                                        size: 18,
+                                      ),
+                                      onPressed: () {
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) =>
+                                        //           CreateCategory.Category(
+                                        //               type: 'edit')),
+                                        // );
+                                      },
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
+                        )
                     ]),
                   if (loan_wallets.length > 0)
                     Column(children: [
@@ -330,7 +497,7 @@ class _WalletsState extends State<Wallets> {
                           ),
                         ),
                       ),
-                      for (var i in loan_wallets)
+                      for (var i = 0; i < loan_wallets.length; i++)
                         Container(
                           height: 48,
                           width: double.infinity,
@@ -342,13 +509,261 @@ class _WalletsState extends State<Wallets> {
                               ),
                             ),
                           ),
-                          child: Text(
-                            i['name'].toString(),
-                            style: TextStyle(
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                              fontSize: 14.0,
+                          child: Row(
+                            children: [
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showAlertDialog(
+                                          context,
+                                          i,
+                                          loan_wallets[i]['name'],
+                                          loan_wallets[i]['type']);
+                                    },
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.remove_circle_outlined,
+                                      color: deleteButtonColor,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 18,
+                                ),
+                              Expanded(
+                                child: Text(
+                                  "${loan_wallets[i]['name'][0].toUpperCase()}${loan_wallets[i]['name'].substring(1)}",
+                                  style: TextStyle(
+                                    height:
+                                        1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.edit_outlined,
+                                      color: hintTextColor,
+                                      size: 18,
+                                    ),
+                                    onPressed: () {
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           CreateCategory.Category(
+                                      //               type: 'edit')),
+                                      // );
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ]),
+                  if (investment_wallets.length > 0)
+                    Column(children: [
+                      Container(
+                        height: 32,
+                      ),
+                      Container(
+                        height: 28,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1.0,
+                              color: borderColor,
                             ),
+                          ),
+                        ),
+                        width: double.infinity,
+                        child: Text(
+                          'Investment Account',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            color: hintTextColor,
+                          ),
+                        ),
+                      ),
+                      for (var i = 0; i < investment_wallets.length; i++)
+                        Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 1.0,
+                                color: borderColor,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showAlertDialog(
+                                          context,
+                                          i,
+                                          investment_wallets[i]['name'],
+                                          investment_wallets[i]['type']);
+                                    },
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.remove_circle_outlined,
+                                      color: deleteButtonColor,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 18,
+                                ),
+                              Expanded(
+                                child: Text(
+                                  "${investment_wallets[i]['name'][0].toUpperCase()}${investment_wallets[i]['name'].substring(1)}",
+                                  style: TextStyle(
+                                    height:
+                                        1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.edit_outlined,
+                                      color: hintTextColor,
+                                      size: 18,
+                                    ),
+                                    onPressed: () {
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           CreateCategory.Category(
+                                      //               type: 'edit')),
+                                      // );
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ]),
+                  if (insurance_wallets.length > 0)
+                    Column(children: [
+                      Container(
+                        height: 32,
+                      ),
+                      Container(
+                        height: 28,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 1.0,
+                              color: borderColor,
+                            ),
+                          ),
+                        ),
+                        width: double.infinity,
+                        child: Text(
+                          'Insurance Account',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            color: hintTextColor,
+                          ),
+                        ),
+                      ),
+                      for (var i = 0; i < insurance_wallets.length; i++)
+                        Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 1.0,
+                                color: borderColor,
+                              ),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showAlertDialog(
+                                          context,
+                                          i,
+                                          insurance_wallets[i]['name'],
+                                          insurance_wallets[i]['type']);
+                                    },
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.remove_circle_outlined,
+                                      color: deleteButtonColor,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 18,
+                                ),
+                              Expanded(
+                                child: Text(
+                                  "${insurance_wallets[i]['name'][0].toUpperCase()}${insurance_wallets[i]['name'].substring(1)}",
+                                  style: TextStyle(
+                                    height:
+                                        1.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                              if (isEditMode == true)
+                                Container(
+                                  width: 17,
+                                  height: double.infinity,
+                                  child: IconButton(
+                                    padding: new EdgeInsets.all(0.0),
+                                    icon: Icon(
+                                      Icons.edit_outlined,
+                                      color: hintTextColor,
+                                      size: 18,
+                                    ),
+                                    onPressed: () {
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           CreateCategory.Category(
+                                      //               type: 'edit')),
+                                      // );
+                                    },
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                     ]),
@@ -358,5 +773,108 @@ class _WalletsState extends State<Wallets> {
         ),
       ),
     );
+  }
+
+  showAlertDialog(
+      BuildContext context, wallet_index, wallet_name, wallet_type) {
+    // set up the buttons
+    Widget deleteButton = TextButton(
+      child: Text("Delete now"),
+      onPressed: () {
+        _deleteWallet(wallet_index, wallet_type);
+        Navigator.of(context).pop();
+      },
+    );
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "Delete Wallet",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: whenButtonActiveColor,
+          fontSize: 16.0,
+        ),
+      ),
+      content: RichText(
+        text: new TextSpan(
+          // Note: Styles for TextSpans must be explicitly defined.
+          // Child text spans will inherit styles from parent
+          style: new TextStyle(
+            fontSize: 14.0,
+            color: Colors.black,
+          ),
+          children: <TextSpan>[
+            new TextSpan(text: 'Are you sure you want to delete the wallet '),
+            new TextSpan(
+              text:
+                  "${wallet_name[0].toUpperCase()}${wallet_name.substring(1)}",
+              style: new TextStyle(fontWeight: FontWeight.bold),
+            ),
+            new TextSpan(text: ' ?'),
+          ],
+        ),
+      ),
+      // content: Text('Are you sure you want to delete the category ' +
+      //     "${category_name[0].toUpperCase()}${category_name.substring(1)}" +
+      //     ' ?'),
+
+      actions: [
+        cancelButton,
+        deleteButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  _deleteWallet(wallet_index, wallet_type) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String stringList = '';
+
+    switch (wallet_type) {
+      case 'cash':
+        cash_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(cash_wallets);
+
+        break;
+      case 'bank_account':
+        bank_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(bank_wallets);
+        break;
+      case 'credit_card':
+        credit_cards_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(credit_cards_wallets);
+        break;
+      case 'loan':
+        loan_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(loan_wallets);
+        break;
+      case 'investment':
+        investment_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(investment_wallets);
+        break;
+      case 'insurance':
+        insurance_wallets.removeAt(wallet_index);
+        stringList = jsonEncode(insurance_wallets);
+        break;
+    }
+
+    prefs.setString(wallet_type + '_wallets', stringList);
+
+    setState(() {});
   }
 }

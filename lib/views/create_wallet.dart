@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import './wallets.dart' as Wallets;
-import 'package:intl/intl.dart';
 
 class Wallet extends StatefulWidget {
   String type;
@@ -23,10 +22,11 @@ class _WalletState extends State<Wallet> {
   Color tooltipIconColor = Color(0xFF616C7D);
   Color tooltipDialogTitleColor = Color(0xFF24324A);
 
-  String walletType = 'Select';
   bool walletNameError = false;
-  bool walletTypeError = false;
   String walletTypeName;
+  double walletBalance = 0;
+  double availableCredit = 0;
+  String notesInput = '';
   String creditCardPaymentDay = 'Select date';
   String creditCardStatementDay = 'Select date';
   String walletName = '';
@@ -38,7 +38,6 @@ class _WalletState extends State<Wallet> {
   int next_mon_last_day;
 
   _calculate_credit_card_statement_date() {
-    print(creditCardStatementDay);
     if (creditCardStatementDay == 'Select date') {
       creditCardUpcomingBillingCycle = '-';
       creditCardNextBillingCycle = '-';
@@ -93,8 +92,6 @@ class _WalletState extends State<Wallet> {
       }
     }
 
-    // print(current_cycle_start_date.month);
-    // print(current_cycle_end_date.month);
     if (current_cycle_end_date.month - current_cycle_start_date.month > 1) {
       current_cycle_end_date =
           DateTime(DateTime.now().year, currentMonthInt + 2, 0);
@@ -108,9 +105,6 @@ class _WalletState extends State<Wallet> {
 
     if (creditCardStatementDayInt > 28) {
       if (next_cycle_start_date.month > current_cycle_end_date.month) {
-        print('I AM HEREE22');
-        print(current_cycle_end_date);
-        print(next_cycle_start_date);
         next_cycle_start_date = DateTime(
             current_cycle_end_date.year, current_cycle_end_date.month + 1, 0);
 
@@ -118,7 +112,6 @@ class _WalletState extends State<Wallet> {
             next_cycle_start_date.month + 1, creditCardStatementDayInt - 1);
       }
       if (next_cycle_end_date.month - next_cycle_start_date.month > 1) {
-        print('I amhere 33');
         next_cycle_end_date = DateTime(
             next_cycle_start_date.year, next_cycle_start_date.month + 2, 0);
       }
@@ -153,19 +146,38 @@ class _WalletState extends State<Wallet> {
   _store_wallet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var new_wallet = {'name': walletName, 'type': walletType, 'balance': 0};
+    var new_wallet = {
+      'name': walletName,
+      'type': widget.type,
+      'notes': notesInput
+    };
 
+    if (widget.type == 'credit_card') {
+      new_wallet['avilable_credit'] = availableCredit.toString();
+
+      if (creditCardPaymentDay == 'Select date' ||
+          creditCardStatementDay == 'Select date') {
+        return false;
+      }
+
+      new_wallet['credit_card_payment_day'] = creditCardPaymentDay.toString();
+      new_wallet['credit_card_statement_day'] =
+          creditCardStatementDay.toString();
+    } else {
+      new_wallet['wallet_balance'] = walletBalance.toString();
+    }
+
+    ;
     // Fetch and decode data
-    final String existing_wallets = await prefs.getString('wallets');
+    final String existing_wallets =
+        await prefs.getString(widget.type + '_wallets');
 
     if (existing_wallets == null) {
       var encodedData = [new_wallet];
       var stringList = jsonEncode(encodedData);
-      prefs.setString('wallets', stringList);
+      prefs.setString(widget.type + '_wallets', stringList);
     } else {
       var decodedData = jsonDecode(existing_wallets);
-      print('here');
-      print(decodedData);
 
       for (int i = 0; i < decodedData?.length ?? 0; i++) {
         if (decodedData[i]['name'] == new_wallet['name']) {
@@ -175,12 +187,13 @@ class _WalletState extends State<Wallet> {
       }
       decodedData.add(new_wallet);
       var stringList = jsonEncode(decodedData);
-      prefs.setString('wallets', stringList);
+      prefs.setString(widget.type + '_wallets', stringList);
     }
 
-    Navigator.push(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => Wallets.Wallets()),
+      (route) => false,
     );
   }
 
@@ -244,6 +257,7 @@ class _WalletState extends State<Wallet> {
                       textAlign: TextAlign.right,
                       onChanged: (content) {
                         walletName = content;
+                        setState(() {});
                       },
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -295,6 +309,11 @@ class _WalletState extends State<Wallet> {
                     ),
                     Expanded(
                       child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (content) {
+                          walletBalance = double.parse(content);
+                          setState(() {});
+                        },
                         textAlign: TextAlign.right,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -332,6 +351,11 @@ class _WalletState extends State<Wallet> {
                     ),
                     Expanded(
                       child: TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (content) {
+                          availableCredit = double.parse(content);
+                          setState(() {});
+                        },
                         textAlign: TextAlign.right,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -609,97 +633,98 @@ class _WalletState extends State<Wallet> {
               Container(
                 height: 16,
               ),
-            Container(
-              height: 68,
-              child: Padding(
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            height: 20,
-                            child: Text(
-                              'Upcoming billing cycle',
-                              style: TextStyle(
-                                color: hintTextColor,
-                                fontSize: 12.0,
-                                height: 1.5,
+            if (widget.type == 'credit_card')
+              Container(
+                height: 68,
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.topLeft,
+                              height: 20,
+                              child: Text(
+                                'Upcoming billing cycle',
+                                style: TextStyle(
+                                  color: hintTextColor,
+                                  fontSize: 12.0,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            creditCardUpcomingBillingCycle,
-                            style: TextStyle(
-                              color: billCycleDateColor,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      height: 2,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            height: 20,
+                          Container(
+                            alignment: Alignment.bottomRight,
                             child: Text(
-                              'Next billing cycle',
+                              creditCardUpcomingBillingCycle,
                               style: TextStyle(
-                                color: hintTextColor,
+                                color: billCycleDateColor,
                                 fontSize: 12.0,
-                                height: 1.5,
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            creditCardNextBillingCycle,
-                            style: TextStyle(
-                              color: billCycleDateColor,
-                              fontSize: 12.0,
+                        ],
+                      ),
+                      Container(
+                        height: 2,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              alignment: Alignment.topLeft,
+                              height: 20,
+                              child: Text(
+                                'Next billing cycle',
+                                style: TextStyle(
+                                  color: hintTextColor,
+                                  fontSize: 12.0,
+                                  height: 1.5,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            child: Text(
+                              creditCardNextBillingCycle,
+                              style: TextStyle(
+                                color: billCycleDateColor,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
                     ),
-                  ],
-                ),
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border(
-                  bottom: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
-                  ),
-                  top: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
-                  ),
-                  left: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
-                  ),
-                  right: BorderSide(
-                    width: 1.0,
-                    color: borderColor,
+                    top: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
+                    ),
+                    left: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
+                    ),
+                    right: BorderSide(
+                      width: 1.0,
+                      color: borderColor,
+                    ),
                   ),
                 ),
               ),
-            ),
 
             Container(
               height: 32,
@@ -715,6 +740,10 @@ class _WalletState extends State<Wallet> {
                 ),
               ),
               child: TextField(
+                onChanged: (content) {
+                  notesInput = content;
+                  setState(() {});
+                },
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Notes (Optional)',
@@ -748,17 +777,7 @@ class _WalletState extends State<Wallet> {
                             walletNameError = false;
                           });
                         }
-                        if (walletType == 'Select') {
-                          setState(() {
-                            walletTypeError = true;
-                          });
-                        } else {
-                          setState(() {
-                            walletTypeError = false;
-                          });
-                        }
-                        if (walletNameError == true ||
-                            walletTypeError == true) {
+                        if (walletNameError == true) {
                           return false;
                         }
                         _store_wallet();
