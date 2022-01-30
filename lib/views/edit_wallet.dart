@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import './wallets.dart' as Wallets;
+import 'wallets.dart' as Wallets;
 
 class Wallet extends StatefulWidget {
   String type;
+  var editWallet;
+  int walletIndex;
 
-  Wallet({this.type});
+  Wallet({this.type, this.editWallet, this.walletIndex});
   @override
   _WalletState createState() => _WalletState();
 }
@@ -36,6 +38,24 @@ class _WalletState extends State<Wallet> {
   String next_mon;
   int current_mon_last_day;
   int next_mon_last_day;
+
+  @override
+  void initState() {
+    super.initState();
+    print('333222 I AM STARTING');
+    walletName = widget.editWallet['name'];
+    print(widget.editWallet);
+    if (widget.type == 'credit_card') {
+      availableCredit = double.parse(widget.editWallet['available_credit']);
+      creditCardPaymentDay = widget.editWallet['credit_card_payment_day'];
+      creditCardStatementDay = widget.editWallet['credit_card_statement_day'];
+      _calculate_credit_card_statement_date();
+    } else {
+      walletBalance = double.parse(widget.editWallet['wallet_balance']);
+    }
+
+    notesInput = widget.editWallet['notes'];
+  }
 
   _calculate_credit_card_statement_date() {
     if (creditCardStatementDay == 'Select date') {
@@ -146,49 +166,37 @@ class _WalletState extends State<Wallet> {
   _store_wallet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var new_wallet = {
-      'name': walletName,
-      'type': widget.type,
-      'notes': notesInput
-    };
-
-    if (widget.type == 'credit_card') {
-      new_wallet['available_credit'] = availableCredit.toString();
-
-      if (creditCardPaymentDay == 'Select date' ||
-          creditCardStatementDay == 'Select date') {
-        return false;
-      }
-
-      new_wallet['credit_card_payment_day'] = creditCardPaymentDay.toString();
-      new_wallet['credit_card_statement_day'] =
-          creditCardStatementDay.toString();
-    } else {
-      new_wallet['wallet_balance'] = walletBalance.toString();
-    }
-
-    ;
     // Fetch and decode data
     final String existing_wallets =
         await prefs.getString(widget.type + '_wallets');
 
-    if (existing_wallets == null) {
-      var encodedData = [new_wallet];
-      var stringList = jsonEncode(encodedData);
-      prefs.setString(widget.type + '_wallets', stringList);
-    } else {
-      var decodedData = jsonDecode(existing_wallets);
+    var decodedData = jsonDecode(existing_wallets);
 
-      for (int i = 0; i < decodedData?.length ?? 0; i++) {
-        if (decodedData[i]['name'] == new_wallet['name']) {
-          print('same name cannot');
-          return false;
-        }
+    for (int i = 0; i < decodedData?.length ?? 0; i++) {
+      if (decodedData[i]['name'] == walletName && i != widget.walletIndex) {
+        print('same name cannot');
+        return false;
       }
-      decodedData.add(new_wallet);
-      var stringList = jsonEncode(decodedData);
-      prefs.setString(widget.type + '_wallets', stringList);
     }
+
+    decodedData[widget.walletIndex]['name'] = walletName;
+    decodedData[widget.walletIndex]['notes'] = notesInput;
+
+    if (widget.type == 'credit_card') {
+      decodedData[widget.walletIndex]['available_credit'] =
+          availableCredit.toString();
+
+      decodedData[widget.walletIndex]['credit_card_payment_day'] =
+          creditCardPaymentDay.toString();
+      decodedData[widget.walletIndex]['credit_card_statement_day'] =
+          creditCardStatementDay.toString();
+    } else {
+      decodedData[widget.walletIndex]['wallet_balance'] =
+          walletBalance.toString();
+    }
+
+    var stringList = jsonEncode(decodedData);
+    prefs.setString(widget.type + '_wallets', stringList);
 
     Navigator.pushAndRemoveUntil(
       context,
@@ -201,22 +209,22 @@ class _WalletState extends State<Wallet> {
   Widget build(BuildContext context) {
     switch (widget.type) {
       case 'bank_account':
-        walletTypeName = 'Add Bank Account';
+        walletTypeName = 'Edit Bank Account';
         break;
       case 'cash':
-        walletTypeName = 'Add Cash';
+        walletTypeName = 'Edit Cash';
         break;
       case 'credit_card':
-        walletTypeName = 'Add Credit Card';
+        walletTypeName = 'Edit Credit Card';
         break;
       case 'loan':
-        walletTypeName = 'Add Loan';
+        walletTypeName = 'Edit Loan';
         break;
       case 'insurance':
-        walletTypeName = 'Add Insurance';
+        walletTypeName = 'Edit Insurance';
         break;
       case 'investment':
-        walletTypeName = 'Add Investment';
+        walletTypeName = 'Edit Investment';
         break;
     }
 
@@ -253,11 +261,12 @@ class _WalletState extends State<Wallet> {
                     ),
                   ),
                   Expanded(
-                    child: TextField(
+                    child: TextFormField(
+                      initialValue: walletName,
                       textAlign: TextAlign.right,
                       onChanged: (content) {
                         walletName = content;
-                        setState(() {});
+                        // setState(() {});
                       },
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -308,7 +317,8 @@ class _WalletState extends State<Wallet> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
+                        initialValue: walletBalance.toString(),
                         keyboardType: TextInputType.number,
                         onChanged: (content) {
                           walletBalance = double.parse(content);
@@ -350,7 +360,8 @@ class _WalletState extends State<Wallet> {
                       ),
                     ),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
+                        initialValue: availableCredit.toString(),
                         keyboardType: TextInputType.number,
                         onChanged: (content) {
                           availableCredit = double.parse(content);
@@ -739,7 +750,8 @@ class _WalletState extends State<Wallet> {
                   ),
                 ),
               ),
-              child: TextField(
+              child: TextFormField(
+                initialValue: notesInput,
                 onChanged: (content) {
                   notesInput = content;
                   setState(() {});
@@ -783,7 +795,7 @@ class _WalletState extends State<Wallet> {
                         _store_wallet();
                       },
                       child: Text(
-                        'Add',
+                        'Edit',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,

@@ -3,6 +3,7 @@ import './create_wallet_landing.dart' as CreateWalletLand;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import './settings.dart' as Setting;
+import 'edit_wallet.dart' as EditWallet;
 
 class Wallets extends StatefulWidget {
   @override
@@ -252,13 +253,17 @@ class _WalletsState extends State<Wallets> {
                                         size: 18,
                                       ),
                                       onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //       builder: (context) =>
-                                        //           CreateCategory.Category(
-                                        //               type: 'edit')),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditWallet.Wallet(
+                                                    type: 'cash',
+                                                    editWallet:
+                                                        insurance_wallets[i],
+                                                    walletIndex: i,
+                                                  )),
+                                        );
                                       },
                                     ),
                                   ),
@@ -355,13 +360,16 @@ class _WalletsState extends State<Wallets> {
                                         size: 18,
                                       ),
                                       onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //       builder: (context) =>
-                                        //           CreateCategory.Category(
-                                        //               type: 'edit')),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditWallet.Wallet(
+                                                    type: 'bank_account',
+                                                    editWallet: bank_wallets[i],
+                                                    walletIndex: i,
+                                                  )),
+                                        );
                                       },
                                     ),
                                   ),
@@ -458,13 +466,17 @@ class _WalletsState extends State<Wallets> {
                                         size: 18,
                                       ),
                                       onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //       builder: (context) =>
-                                        //           CreateCategory.Category(
-                                        //               type: 'edit')),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditWallet.Wallet(
+                                                    type: 'credit_card',
+                                                    editWallet:
+                                                        credit_cards_wallets[i],
+                                                    walletIndex: i,
+                                                  )),
+                                        );
                                       },
                                     ),
                                   ),
@@ -557,13 +569,16 @@ class _WalletsState extends State<Wallets> {
                                       size: 18,
                                     ),
                                     onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) =>
-                                      //           CreateCategory.Category(
-                                      //               type: 'edit')),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditWallet.Wallet(
+                                                  type: 'loan',
+                                                  editWallet: loan_wallets[i],
+                                                  walletIndex: i,
+                                                )),
+                                      );
                                     },
                                   ),
                                 ),
@@ -655,13 +670,17 @@ class _WalletsState extends State<Wallets> {
                                       size: 18,
                                     ),
                                     onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) =>
-                                      //           CreateCategory.Category(
-                                      //               type: 'edit')),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditWallet.Wallet(
+                                                  type: 'investment',
+                                                  editWallet:
+                                                      investment_wallets[i],
+                                                  walletIndex: i,
+                                                )),
+                                      );
                                     },
                                   ),
                                 ),
@@ -753,13 +772,17 @@ class _WalletsState extends State<Wallets> {
                                       size: 18,
                                     ),
                                     onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) =>
-                                      //           CreateCategory.Category(
-                                      //               type: 'edit')),
-                                      // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditWallet.Wallet(
+                                                  type: 'insurance',
+                                                  editWallet:
+                                                      insurance_wallets[i],
+                                                  walletIndex: i,
+                                                )),
+                                      );
                                     },
                                   ),
                                 ),
