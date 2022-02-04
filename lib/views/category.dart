@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import './create_category.dart' as CreateCategory;
+import './edit_category.dart' as EditCategory;
 import './settings.dart' as Setting;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,6 +36,7 @@ class _CategoryState extends State<Category> {
   Color activeCategoryColor = Color(0xFF3A475C);
   Color inActiveCategoryColor = Color(0xFFEBEDEF);
   Color deleteButtonColor = Color(0xFFE36565);
+  Color addNewCategoryTextColor = Color(0xFF0472FF);
   var formatter = NumberFormat('#,##,###.00#');
 
   @override
@@ -470,7 +472,8 @@ class _CategoryState extends State<Category> {
                                                 text: new TextSpan(
                                                   style: new TextStyle(
                                                     fontSize: 12.0,
-                                                    color: hintTextColor,
+                                                    color:
+                                                        addNewCategoryTextColor,
                                                   ),
                                                   children: <TextSpan>[
                                                     new TextSpan(text: 'Add '),
@@ -560,8 +563,15 @@ class _CategoryState extends State<Category> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        CreateCategory.Category(
-                                                            type: 'edit')),
+                                                        EditCategory.Category(
+                                                          category_type:
+                                                              active_categories[
+                                                                  i]['type'],
+                                                          category_name:
+                                                              active_categories[
+                                                                  i]['name'],
+                                                          category_index: i,
+                                                        )),
                                               );
                                             },
                                           ),
