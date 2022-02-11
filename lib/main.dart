@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'views/create_wallet.dart' as CreateWallet;
+import 'views/transactions.dart' as Transactions;
 import 'views/wallets.dart' as Wallets;
 import 'views/settings.dart' as Settings;
 
@@ -118,7 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             //  MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
             // MaterialPageRoute(builder: (context) => Wallets.Wallets()),
-            MaterialPageRoute(builder: (context) => Settings.Settings()),
+            MaterialPageRoute(
+                builder: (context) => Transactions.Transactions()),
           );
         },
         // onPressed: _incrementCounter,
