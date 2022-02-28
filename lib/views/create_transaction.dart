@@ -22,8 +22,23 @@ class Category {
   }
 }
 
+class Wallet {
+  final String name;
+  final String type;
+
+  Wallet({@required this.name, @required this.type});
+
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+      name: json['name'],
+      type: json['type'],
+    );
+  }
+}
+
 class _CreateTransactionState extends State<CreateTransaction> {
   String selectedWhen = 'today';
+  String transaction_description = '';
   Color borderColor = Color(0xFFEBEDEF);
   Color hintTextColor = Color(0xFF9CA3AD);
   Color backgroundColor = Color(0xFFFFFFFF);
@@ -42,8 +57,15 @@ class _CreateTransactionState extends State<CreateTransaction> {
       type: 'transfer',
     ),
   ];
+  List<Wallet> all_wallets = [
+    Wallet(
+      name: 'Select',
+      type: '-',
+    ),
+  ];
 
   Category transaction_category;
+  Wallet transaction_wallet;
 
   var formatter = NumberFormat('#,##,###.00#');
 
@@ -51,10 +73,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
   void initState() {
     super.initState();
     print('333 I AM STARTING create transaction');
-    _loadCategories();
+    _loadCategoriesAndWallets();
   }
 
-  _loadCategories() async {
+  _loadCategoriesAndWallets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     List expense_categories_local = [];
@@ -119,13 +141,129 @@ class _CreateTransactionState extends State<CreateTransaction> {
             Category(name: category['name'], type: category['type']))
         .toList();
 
+    // Load Wallets
+    List<Wallet> all_wallets_local = [];
+    List bank_wallets_local = [];
+    List cash_wallets_local = [];
+    List credit_cards_wallets_local = [];
+    List loan_wallets_local = [];
+    List insurance_wallets_local = [];
+    List investment_wallets_local = [];
+
+    if (prefs.getString('bank_account_wallets') != null) {
+      bank_wallets_local = jsonDecode(prefs.getString('bank_account_wallets'));
+      List<Wallet> bank_wallets_local2 = bank_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(bank_wallets_local2);
+    }
+
+    if (prefs.getString('cash_wallets') != null) {
+      cash_wallets_local = jsonDecode(prefs.getString('cash_wallets'));
+      List<Wallet> cash_wallets_local2 = cash_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(cash_wallets_local2);
+    }
+
+    if (prefs.getString('credit_card_wallets') != null) {
+      credit_cards_wallets_local =
+          jsonDecode(prefs.getString('credit_card_wallets'));
+      List<Wallet> credit_cards_wallets_local2 = credit_cards_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(credit_cards_wallets_local2);
+    }
+
+    if (prefs.getString('loan_wallets') != null) {
+      loan_wallets_local = jsonDecode(prefs.getString('loan_wallets'));
+      List<Wallet> loan_wallets_local2 = loan_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(loan_wallets_local2);
+    }
+
+    if (prefs.getString('insurance_wallets') != null) {
+      insurance_wallets_local =
+          jsonDecode(prefs.getString('insurance_wallets'));
+      List<Wallet> insurance_wallets_local2 = insurance_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(insurance_wallets_local2);
+    }
+
+    if (prefs.getString('investment_wallets') != null) {
+      investment_wallets_local =
+          jsonDecode(prefs.getString('investment_wallets'));
+      List<Wallet> investment_wallets_local2 = investment_wallets_local
+          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+          .toList();
+      all_wallets_local.addAll(investment_wallets_local2);
+    }
+
     setState(() {
       all_categories =
           all_categories + expense_categories_local2 + income_categories_local2;
-
+      all_wallets = all_wallets_local;
       transaction_category = all_categories[0];
+      transaction_wallet = all_wallets_local[0];
+      print(all_wallets);
     });
   }
+
+  // _store_transaction() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //   var newtransaction = {
+  //     'name': walletName,
+  //     'type': widget.type,
+  //     'notes': notesInput
+  //   };
+
+  //   if (widget.type == 'credit_card') {
+  //     new_wallet['available_credit'] = availableCredit.toString();
+
+  //     if (creditCardPaymentDay == 'Select date' ||
+  //         creditCardStatementDay == 'Select date') {
+  //       return false;
+  //     }
+
+  //     new_wallet['credit_card_payment_day'] = creditCardPaymentDay.toString();
+  //     new_wallet['credit_card_statement_day'] =
+  //         creditCardStatementDay.toString();
+  //   } else {
+  //     new_wallet['wallet_balance'] = walletBalance.toString();
+  //   }
+
+  //   ;
+  //   // Fetch and decode data
+  //   final String existing_wallets =
+  //       await prefs.getString(widget.type + '_wallets');
+
+  //   if (existing_wallets == null) {
+  //     var encodedData = [new_wallet];
+  //     var stringList = jsonEncode(encodedData);
+  //     prefs.setString(widget.type + '_wallets', stringList);
+  //   } else {
+  //     var decodedData = jsonDecode(existing_wallets);
+
+  //     for (int i = 0; i < decodedData?.length ?? 0; i++) {
+  //       if (decodedData[i]['name'] == new_wallet['name']) {
+  //         print('same name cannot');
+  //         return false;
+  //       }
+  //     }
+  //     decodedData.add(new_wallet);
+  //     var stringList = jsonEncode(decodedData);
+  //     prefs.setString(widget.type + '_wallets', stringList);
+  //   }
+
+  //   Navigator.pushAndRemoveUntil(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => Wallets.Wallets()),
+  //     (route) => false,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -269,26 +407,23 @@ class _CreateTransactionState extends State<CreateTransaction> {
                         ),
                       ),
                       Expanded(
-                          child: DropdownButton<String>(
+                          child: DropdownButton<Wallet>(
                         icon: Visibility(
                           visible: false,
                           child: Icon(Icons.arrow_downward),
                         ),
-                        items: <String>[
-                          'Select',
-                          'Cash',
-                          'Debit Card',
-                          'Bank Account',
-                          'Credit Card',
-                          'Loan Account'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
+                        items: all_wallets.map((Wallet value) {
+                          return DropdownMenuItem<Wallet>(
                             value: value,
                             child: Container(
                               width: (width - 16 - 16) / 2,
                               child: Text(
-                                value,
-                                style: value == 'Select'
+                                (value.name == 'Select')
+                                    ? value.name
+                                    : "${value.type.toString()[0].toUpperCase()}${value.type.toString().substring(1)}" +
+                                        '/' +
+                                        "${value.name.toString()[0].toUpperCase()}${value.name.toString().substring(1)}",
+                                style: value.name == 'Select'
                                     ? TextStyle(
                                         color: hintTextColor, fontSize: 14)
                                     : TextStyle(fontSize: 14),
@@ -298,14 +433,12 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           );
                         }).toList(),
                         onChanged: (value) {
-                          // setState(() {
-                          //   walletType = value;
-                          // });
-                          // print('Changed wallet type');
-                          // print(walletType);
+                          setState(() {
+                            transaction_wallet = value;
+                          });
                         },
                         underline: SizedBox(),
-                        value: 'Select',
+                        value: transaction_wallet,
                       )),
                     ],
                   ),
@@ -471,68 +604,69 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     ],
                   ),
                 ),
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 1.0,
-                        color: borderColor,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Repeat (Optional)',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          child: DropdownButton<String>(
-                        icon: Visibility(
-                          visible: false,
-                          child: Icon(Icons.arrow_downward),
-                        ),
-                        items: <String>[
-                          'Select',
-                          'Cash',
-                          'Debit Card',
-                          'Bank Account',
-                          'Credit Card',
-                          'Loan Account'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Container(
-                              width: (width - 16 - 16) / 2,
-                              child: Text(
-                                value,
-                                style: value == 'Select'
-                                    ? TextStyle(
-                                        color: hintTextColor, fontSize: 14)
-                                    : TextStyle(fontSize: 14),
-                                textAlign: TextAlign.right, //this will do that
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          // setState(() {
-                          //   walletType = value;
-                          // });
-                          // print('Changed wallet type');
-                          // print(walletType);
-                        },
-                        underline: SizedBox(),
-                        value: 'Select',
-                      )),
-                    ],
-                  ),
-                ),
+                //  Temp disabled until we have backend to do cronjob calculations
+                // Container(
+                //   height: 50,
+                //   decoration: BoxDecoration(
+                //     border: Border(
+                //       bottom: BorderSide(
+                //         width: 1.0,
+                //         color: borderColor,
+                //       ),
+                //     ),
+                //   ),
+                //   child: Row(
+                //     children: [
+                //       Expanded(
+                //         child: Text(
+                //           'Repeat (Optional)',
+                //           style: TextStyle(
+                //             fontSize: 14.0,
+                //           ),
+                //         ),
+                //       ),
+                //       Expanded(
+                //           child: DropdownButton<String>(
+                //         icon: Visibility(
+                //           visible: false,
+                //           child: Icon(Icons.arrow_downward),
+                //         ),
+                //         items: <String>[
+                //           'Select',
+                //           'Cash',
+                //           'Debit Card',
+                //           'Bank Account',
+                //           'Credit Card',
+                //           'Loan Account'
+                //         ].map((String value) {
+                //           return DropdownMenuItem<String>(
+                //             value: value,
+                //             child: Container(
+                //               width: (width - 16 - 16) / 2,
+                //               child: Text(
+                //                 value,
+                //                 style: value == 'Select'
+                //                     ? TextStyle(
+                //                         color: hintTextColor, fontSize: 14)
+                //                     : TextStyle(fontSize: 14),
+                //                 textAlign: TextAlign.right, //this will do that
+                //               ),
+                //             ),
+                //           );
+                //         }).toList(),
+                //         onChanged: (value) {
+                //           // setState(() {
+                //           //   walletType = value;
+                //           // });
+                //           // print('Changed wallet type');
+                //           // print(walletType);
+                //         },
+                //         underline: SizedBox(),
+                //         value: 'Select',
+                //       )),
+                //     ],
+                //   ),
+                // ),
                 Container(
                   height: 32,
                 ),
@@ -547,6 +681,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     ),
                   ),
                   child: TextField(
+                    onChanged: (content) {
+                      transaction_description = content;
+                      setState(() {});
+                    },
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Description (Optional)',

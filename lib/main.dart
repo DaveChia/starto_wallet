@@ -53,6 +53,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  Color nav_border_color = Color(0xFF24324A1A);
+  Color selected_nav_color = Color(0xFF0472FF);
+  Color unselected_nav_color = Color(0xFF616C7D);
+
+  String selected_page = 'transaction';
 
   @override
   void initState() {
@@ -103,30 +108,141 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many timesss:',
+            Expanded(
+              child: Container(),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      width: 1.0,
+                      color: nav_border_color,
+                    ),
+                  ),
+                ),
+                height: 72,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Column(
+                            children: [
+                              Text(
+                                '21 Nov',
+                                style: TextStyle(
+                                  color: selected_page == 'transaction'
+                                      ? selected_nav_color
+                                      : unselected_nav_color,
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                              Container(
+                                height: 4,
+                              ),
+                              Icon(
+                                Icons.circle,
+                                size: 8,
+                                color: selected_page == 'transaction'
+                                    ? selected_nav_color
+                                    : Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Wallets.Wallets()),
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.folder_open_rounded,
+                                size: 24,
+                                color: selected_page == 'wallet'
+                                    ? selected_nav_color
+                                    : unselected_nav_color,
+                              ),
+                              Container(
+                                height: 4,
+                              ),
+                              Icon(
+                                Icons.circle,
+                                size: 8,
+                                color: selected_page == 'wallet'
+                                    ? selected_nav_color
+                                    : Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Settings.Settings()),
+                          );
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.settings,
+                                size: 24,
+                                color: selected_page == 'setting'
+                                    ? selected_nav_color
+                                    : unselected_nav_color,
+                              ),
+                              Container(
+                                height: 4,
+                              ),
+                              Icon(
+                                Icons.circle,
+                                size: 8,
+                                color: selected_page == 'setting'
+                                    ? selected_nav_color
+                                    : Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ))
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            //  MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
-            // MaterialPageRoute(builder: (context) => Wallets.Wallets()),
-            MaterialPageRoute(
-                builder: (context) => Transactions.Transactions()),
-          );
-        },
-        // onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       //  MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
+      //       // MaterialPageRoute(builder: (context) => Wallets.Wallets()),
+      //       MaterialPageRoute(
+      //           builder: (context) => Transactions.Transactions()),
+      //       // MaterialPageRoute(builder: (context) => Settings.Settings()),
+      //     );
+      //   },
+      //   // onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
