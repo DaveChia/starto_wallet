@@ -3,6 +3,7 @@ import './wallets.dart' as Wallets;
 import './repeated_transactions.dart' as RepeatedTransactions;
 import './category.dart' as Category;
 import 'package:starto_wallet/main.dart' as Main;
+import 'wallets.dart' as Wallets;
 
 class Settings extends StatelessWidget {
   @override
@@ -57,90 +58,92 @@ class Settings extends StatelessWidget {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RepeatedTransactions
-                                    .RepeatedTransactions()),
-                          );
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Repeated transactions',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          print("budget was tapped");
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Budget',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Wallets.Wallets()),
-                          );
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Wallet',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => RepeatedTransactions
+                      //               .RepeatedTransactions()),
+                      //     );
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Repeated transactions',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      //  Budget functionalities temporary disabled
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     print("budget was tapped");
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Budget',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      //  Wallet functionalities temporary disabled
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => Wallets.Wallets()),
+                      //     );
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Wallet',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -334,11 +337,8 @@ class Settings extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            //  MaterialPageRoute(builder: (context) => CreateWallet.Wallet()),
-                            // MaterialPageRoute(builder: (context) => Wallets.Wallets()),
                             MaterialPageRoute(
                                 builder: (context) => Main.MyApp()),
-                            // MaterialPageRoute(builder: (context) => Settings.Settings()),
                           );
                         },
                         child: Padding(
@@ -369,35 +369,42 @@ class Settings extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 12),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.folder_open_rounded,
-                                size: 24,
-                                color: selected_page == 'wallet'
-                                    ? selected_nav_color
-                                    : unselected_nav_color,
-                              ),
-                              Container(
-                                height: 4,
-                              ),
-                              Icon(
-                                Icons.circle,
-                                size: 8,
-                                color: selected_page == 'wallet'
-                                    ? selected_nav_color
-                                    : Colors.transparent,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    //  Wallet functionalities temporary disabled
+                    // Expanded(
+                    //   child: GestureDetector(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => Wallets.Wallets()),
+                    //       );
+                    //     },
+                    //     child: Padding(
+                    //       padding: EdgeInsets.only(top: 12),
+                    //       child: Column(
+                    //         children: [
+                    //           Icon(
+                    //             Icons.folder_open_rounded,
+                    //             size: 24,
+                    //             color: selected_page == 'wallet'
+                    //                 ? selected_nav_color
+                    //                 : unselected_nav_color,
+                    //           ),
+                    //           Container(
+                    //             height: 4,
+                    //           ),
+                    //           Icon(
+                    //             Icons.circle,
+                    //             size: 8,
+                    //             color: selected_page == 'wallet'
+                    //                 ? selected_nav_color
+                    //                 : Colors.transparent,
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     Expanded(
                       child: GestureDetector(
                         onTap: () {},

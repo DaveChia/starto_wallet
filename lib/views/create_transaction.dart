@@ -2,10 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../main.dart' as Main;
 
 class CreateTransaction extends StatefulWidget {
   @override
   _CreateTransactionState createState() => _CreateTransactionState();
+}
+
+class Transaction {
+  final double amount;
+  final Category category;
+  // final Wallet wallet;
+  final String description;
+  final DateTime date;
+
+  Transaction(
+      {@required this.amount,
+      @required this.category,
+      // @required this.wallet,
+      @required this.description,
+      @required this.date});
+
+  Transaction.fromJson(Map<String, dynamic> json)
+      : amount = json['amount'],
+        category = json['category'],
+        // wallet = json['wallet'],
+        description = json['description'],
+        date = json['date'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'category': category.toJson(),
+      // 'wallet': wallet.toJson(),
+      'description': description,
+      'date': date.toString(),
+    };
+  }
 }
 
 class Category {
@@ -14,11 +47,22 @@ class Category {
 
   Category({@required this.name, @required this.type});
 
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      name: json['name'],
-      type: json['type'],
-    );
+  // factory Category.fromJson(Map<String, dynamic> json) {
+  //   return Category(
+  //     name: json['name'],
+  //     type: json['type'],
+  //   );
+  // }
+
+  Category.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        type = json['type'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'type': type,
+    };
   }
 }
 
@@ -28,16 +72,28 @@ class Wallet {
 
   Wallet({@required this.name, @required this.type});
 
-  factory Wallet.fromJson(Map<String, dynamic> json) {
-    return Wallet(
-      name: json['name'],
-      type: json['type'],
-    );
+  // factory Wallet.fromJson(Map<String, dynamic> json) {
+  //   return Wallet(
+  //     name: json['name'],
+  //     type: json['type'],
+  //   );
+  // }
+
+  Wallet.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        type = json['type'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'type': type,
+    };
   }
 }
 
 class _CreateTransactionState extends State<CreateTransaction> {
   String selectedWhen = 'today';
+  double transaction_amount = 0;
   String transaction_description = '';
   Color borderColor = Color(0xFFEBEDEF);
   Color hintTextColor = Color(0xFF9CA3AD);
@@ -63,6 +119,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
       type: '-',
     ),
   ];
+  bool amountError = false;
+  bool categoryError = false;
+  bool walletError = false;
 
   Category transaction_category;
   Wallet transaction_wallet;
@@ -141,129 +200,140 @@ class _CreateTransactionState extends State<CreateTransaction> {
             Category(name: category['name'], type: category['type']))
         .toList();
 
+    //  Wallet functionalities temporary disabled
     // Load Wallets
-    List<Wallet> all_wallets_local = [];
-    List bank_wallets_local = [];
-    List cash_wallets_local = [];
-    List credit_cards_wallets_local = [];
-    List loan_wallets_local = [];
-    List insurance_wallets_local = [];
-    List investment_wallets_local = [];
+    // List<Wallet> all_wallets_local = [];
+    // List bank_wallets_local = [];
+    // List cash_wallets_local = [];
+    // List credit_cards_wallets_local = [];
+    // List loan_wallets_local = [];
+    // List insurance_wallets_local = [];
+    // List investment_wallets_local = [];
 
-    if (prefs.getString('bank_account_wallets') != null) {
-      bank_wallets_local = jsonDecode(prefs.getString('bank_account_wallets'));
-      List<Wallet> bank_wallets_local2 = bank_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(bank_wallets_local2);
-    }
+    // if (prefs.getString('bank_account_wallets') != null) {
+    //   bank_wallets_local = jsonDecode(prefs.getString('bank_account_wallets'));
+    //   List<Wallet> bank_wallets_local2 = bank_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(bank_wallets_local2);
+    // }
 
-    if (prefs.getString('cash_wallets') != null) {
-      cash_wallets_local = jsonDecode(prefs.getString('cash_wallets'));
-      List<Wallet> cash_wallets_local2 = cash_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(cash_wallets_local2);
-    }
+    // if (prefs.getString('cash_wallets') != null) {
+    //   cash_wallets_local = jsonDecode(prefs.getString('cash_wallets'));
+    //   List<Wallet> cash_wallets_local2 = cash_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(cash_wallets_local2);
+    // }
 
-    if (prefs.getString('credit_card_wallets') != null) {
-      credit_cards_wallets_local =
-          jsonDecode(prefs.getString('credit_card_wallets'));
-      List<Wallet> credit_cards_wallets_local2 = credit_cards_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(credit_cards_wallets_local2);
-    }
+    // if (prefs.getString('credit_card_wallets') != null) {
+    //   credit_cards_wallets_local =
+    //       jsonDecode(prefs.getString('credit_card_wallets'));
+    //   List<Wallet> credit_cards_wallets_local2 = credit_cards_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(credit_cards_wallets_local2);
+    // }
 
-    if (prefs.getString('loan_wallets') != null) {
-      loan_wallets_local = jsonDecode(prefs.getString('loan_wallets'));
-      List<Wallet> loan_wallets_local2 = loan_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(loan_wallets_local2);
-    }
+    // if (prefs.getString('loan_wallets') != null) {
+    //   loan_wallets_local = jsonDecode(prefs.getString('loan_wallets'));
+    //   List<Wallet> loan_wallets_local2 = loan_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(loan_wallets_local2);
+    // }
 
-    if (prefs.getString('insurance_wallets') != null) {
-      insurance_wallets_local =
-          jsonDecode(prefs.getString('insurance_wallets'));
-      List<Wallet> insurance_wallets_local2 = insurance_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(insurance_wallets_local2);
-    }
+    // if (prefs.getString('insurance_wallets') != null) {
+    //   insurance_wallets_local =
+    //       jsonDecode(prefs.getString('insurance_wallets'));
+    //   List<Wallet> insurance_wallets_local2 = insurance_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(insurance_wallets_local2);
+    // }
 
-    if (prefs.getString('investment_wallets') != null) {
-      investment_wallets_local =
-          jsonDecode(prefs.getString('investment_wallets'));
-      List<Wallet> investment_wallets_local2 = investment_wallets_local
-          .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
-          .toList();
-      all_wallets_local.addAll(investment_wallets_local2);
-    }
+    // if (prefs.getString('investment_wallets') != null) {
+    //   investment_wallets_local =
+    //       jsonDecode(prefs.getString('investment_wallets'));
+    //   List<Wallet> investment_wallets_local2 = investment_wallets_local
+    //       .map((wallet) => Wallet(name: wallet['name'], type: wallet['type']))
+    //       .toList();
+    //   all_wallets_local.addAll(investment_wallets_local2);
+    // }
 
     setState(() {
       all_categories =
           all_categories + expense_categories_local2 + income_categories_local2;
-      all_wallets = all_wallets_local;
-      transaction_category = all_categories[0];
-      transaction_wallet = all_wallets_local[0];
-      print(all_wallets);
+      // all_wallets = all_wallets + all_wallets_local;
+      if (all_categories.length != 0) {
+        transaction_category = all_categories[0];
+      }
+
+      // if (all_wallets.length != 0) {
+      //   transaction_wallet = all_wallets[0];
+      // }
     });
   }
 
-  // _store_transaction() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  _saveTransaction() async {
+    DateTime selected_date = DateTime.now();
 
-  //   var newtransaction = {
-  //     'name': walletName,
-  //     'type': widget.type,
-  //     'notes': notesInput
-  //   };
+    if (selectedWhen == 'yesterday') {
+      selected_date = DateTime.now().subtract(Duration(days: 1));
+    }
 
-  //   if (widget.type == 'credit_card') {
-  //     new_wallet['available_credit'] = availableCredit.toString();
+    if (selectedWhen == 'custom') {
+      selected_date = selectedCustomDate;
+    }
 
-  //     if (creditCardPaymentDay == 'Select date' ||
-  //         creditCardStatementDay == 'Select date') {
-  //       return false;
-  //     }
+    final new_transaction = Transaction(
+        amount: transaction_amount,
+        category: transaction_category,
+        // wallet: transaction_wallet,
+        description: transaction_description,
+        date: selected_date);
 
-  //     new_wallet['credit_card_payment_day'] = creditCardPaymentDay.toString();
-  //     new_wallet['credit_card_statement_day'] =
-  //         creditCardStatementDay.toString();
-  //   } else {
-  //     new_wallet['wallet_balance'] = walletBalance.toString();
-  //   }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  //   ;
-  //   // Fetch and decode data
-  //   final String existing_wallets =
-  //       await prefs.getString(widget.type + '_wallets');
+    // Fetch and decode data
+    final String existing_transactions = await prefs.getString('transactions');
 
-  //   if (existing_wallets == null) {
-  //     var encodedData = [new_wallet];
-  //     var stringList = jsonEncode(encodedData);
-  //     prefs.setString(widget.type + '_wallets', stringList);
-  //   } else {
-  //     var decodedData = jsonDecode(existing_wallets);
+    if (existing_transactions == null) {
+      var encodedData = [new_transaction.toJson()];
 
-  //     for (int i = 0; i < decodedData?.length ?? 0; i++) {
-  //       if (decodedData[i]['name'] == new_wallet['name']) {
-  //         print('same name cannot');
-  //         return false;
-  //       }
-  //     }
-  //     decodedData.add(new_wallet);
-  //     var stringList = jsonEncode(decodedData);
-  //     prefs.setString(widget.type + '_wallets', stringList);
-  //   }
+      var stringList = jsonEncode(encodedData);
 
-  //   Navigator.pushAndRemoveUntil(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => Wallets.Wallets()),
-  //     (route) => false,
-  //   );
-  // }
+      prefs.setString('transactions', stringList);
+    } else {
+      var decodedData = jsonDecode(existing_transactions);
+
+      decodedData.add(new_transaction.toJson());
+      var stringList = jsonEncode(decodedData);
+      prefs.setString('transactions', stringList);
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Main.MyApp()),
+      (route) => false,
+    );
+  }
+
+  DateTime selectedCustomDate = DateTime.now();
+  TextEditingController _date = new TextEditingController();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedCustomDate,
+        firstDate: DateTime(1901, 1),
+        lastDate: DateTime(2100));
+    if (picked != null && picked != selectedCustomDate)
+      setState(() {
+        selectedCustomDate = picked;
+        _date.value = TextEditingValue(text: picked.toString());
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -309,6 +379,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
                       ),
                       Expanded(
                         child: TextField(
+                          onChanged: (content) {
+                            transaction_amount = double.parse(content);
+                            setState(() {});
+                          },
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.right,
                           decoration: InputDecoration(
@@ -324,6 +398,20 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     ],
                   ),
                 ),
+                if (amountError == true)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8, bottom: 8),
+                    height: 20,
+                    width: double.infinity,
+                    child: Text(
+                      'Enter the transaction amount',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
                 Container(
                   height: 32,
                 ),
@@ -386,63 +474,92 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     ],
                   ),
                 ),
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 1.0,
-                        color: borderColor,
+                if (categoryError == true)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8, bottom: 8),
+                    height: 20,
+                    width: double.infinity,
+                    child: Text(
+                      'Select a category',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.0,
                       ),
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Wallet',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          child: DropdownButton<Wallet>(
-                        icon: Visibility(
-                          visible: false,
-                          child: Icon(Icons.arrow_downward),
-                        ),
-                        items: all_wallets.map((Wallet value) {
-                          return DropdownMenuItem<Wallet>(
-                            value: value,
-                            child: Container(
-                              width: (width - 16 - 16) / 2,
-                              child: Text(
-                                (value.name == 'Select')
-                                    ? value.name
-                                    : "${value.type.toString()[0].toUpperCase()}${value.type.toString().substring(1)}" +
-                                        '/' +
-                                        "${value.name.toString()[0].toUpperCase()}${value.name.toString().substring(1)}",
-                                style: value.name == 'Select'
-                                    ? TextStyle(
-                                        color: hintTextColor, fontSize: 14)
-                                    : TextStyle(fontSize: 14),
-                                textAlign: TextAlign.right, //this will do that
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            transaction_wallet = value;
-                          });
-                        },
-                        underline: SizedBox(),
-                        value: transaction_wallet,
-                      )),
-                    ],
-                  ),
-                ),
+                //  Wallet functionalities temporary disabled
+                // Container(
+                //   height: 50,
+                //   decoration: BoxDecoration(
+                //     border: Border(
+                //       bottom: BorderSide(
+                //         width: 1.0,
+                //         color: borderColor,
+                //       ),
+                //     ),
+                //   ),
+                //   child: Row(
+                //     children: [
+                //       Expanded(
+                //         child: Text(
+                //           'Wallet',
+                //           style: TextStyle(
+                //             fontSize: 14.0,
+                //           ),
+                //         ),
+                //       ),
+                //       Expanded(
+                //           child: DropdownButton<Wallet>(
+                //         icon: Visibility(
+                //           visible: false,
+                //           child: Icon(Icons.arrow_downward),
+                //         ),
+                //         items: all_wallets.map((Wallet value) {
+                //           return DropdownMenuItem<Wallet>(
+                //             value: value,
+                //             child: Container(
+                //               width: (width - 16 - 16) / 2,
+                //               child: Text(
+                //                 (value.name == 'Select')
+                //                     ? value.name
+                //                     : "${value.type.toString()[0].toUpperCase()}${value.type.toString().substring(1)}" +
+                //                         '/' +
+                //                         "${value.name.toString()[0].toUpperCase()}${value.name.toString().substring(1)}",
+                //                 style: value.name == 'Select'
+                //                     ? TextStyle(
+                //                         color: hintTextColor, fontSize: 14)
+                //                     : TextStyle(fontSize: 14),
+                //                 textAlign: TextAlign.right, //this will do that
+                //               ),
+                //             ),
+                //           );
+                //         }).toList(),
+                //         onChanged: (value) {
+                //           setState(() {
+                //             transaction_wallet = value;
+                //           });
+                //         },
+                //         underline: SizedBox(),
+                //         value: transaction_wallet,
+                //       )),
+                //     ],
+                //   ),
+                // ),
+                // if (walletError == true)
+                //   Container(
+                //     margin: const EdgeInsets.only(top: 8, bottom: 8),
+                //     height: 20,
+                //     width: double.infinity,
+                //     child: Text(
+                //       'Select a wallet',
+                //       textAlign: TextAlign.right,
+                //       style: TextStyle(
+                //         color: Colors.red,
+                //         fontSize: 12.0,
+                //       ),
+                //     ),
+                //   ),
                 Container(
                   height: 32,
                 ),
@@ -486,16 +603,16 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           },
                           child: Row(
                             children: [
-                              if (selectedWhen == 'today')
-                                Icon(
-                                  Icons.check,
-                                  color: addButtonColor,
-                                  size: 14,
-                                ),
-                              Container(
-                                width: 5,
-                                height: 36,
-                              ),
+                              // if (selectedWhen == 'today')
+                              //   Icon(
+                              //     Icons.check,
+                              //     color: addButtonColor,
+                              //     size: 14,
+                              //   ),
+                              // Container(
+                              //   width: 5,
+                              //   height: 36,
+                              // ),
                               Text(
                                 'Today',
                                 style: TextStyle(
@@ -532,16 +649,16 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           },
                           child: Row(
                             children: [
-                              if (selectedWhen == 'yesterday')
-                                Icon(
-                                  Icons.check,
-                                  color: addButtonColor,
-                                  size: 14,
-                                ),
-                              Container(
-                                width: 5,
-                                height: 36,
-                              ),
+                              // if (selectedWhen == 'yesterday')
+                              //   Icon(
+                              //     Icons.check,
+                              //     color: addButtonColor,
+                              //     size: 14,
+                              //   ),
+                              // Container(
+                              //   width: 5,
+                              //   height: 36,
+                              // ),
                               Text(
                                 'Yesterday',
                                 style: TextStyle(
@@ -572,24 +689,28 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           elevation: 0,
                           color: backgroundColor,
                           onPressed: () {
+                            _selectDate(context);
                             setState(() {
                               selectedWhen = 'custom';
                             });
                           },
                           child: Row(
                             children: [
-                              if (selectedWhen == 'custom')
-                                Icon(
-                                  Icons.check,
-                                  color: addButtonColor,
-                                  size: 14,
-                                ),
-                              Container(
-                                width: 5,
-                                height: 36,
-                              ),
+                              // if (selectedWhen == 'custom')
+                              //   Icon(
+                              //     Icons.check,
+                              //     color: addButtonColor,
+                              //     size: 14,
+                              //   ),
+                              // Container(
+                              //   width: 5,
+                              //   height: 36,
+                              // ),
                               Text(
-                                'Custom',
+                                (selectedWhen == 'custom')
+                                    ? DateFormat('y MMM d')
+                                        .format(selectedCustomDate)
+                                    : 'Custom',
                                 style: TextStyle(
                                   color: selectedWhen == 'custom'
                                       ? whenButtonActiveTextColor
@@ -709,31 +830,41 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           elevation: 0,
                           color: addButtonColor,
                           onPressed: () {
-                            // print('save wallet');
-                            // print(walletName);
-                            // if (walletName == '') {
+                            print(selectedCustomDate);
+                            if (transaction_category.name == 'Select') {
+                              setState(() {
+                                categoryError = true;
+                              });
+                            } else {
+                              setState(() {
+                                categoryError = false;
+                              });
+                            }
+                            //  Wallet functionalities temporary disabled
+                            // if (transaction_wallet.name == 'Select') {
                             //   setState(() {
-                            //     walletNameError = true;
+                            //     walletError = true;
                             //   });
                             // } else {
                             //   setState(() {
-                            //     walletNameError = false;
+                            //     walletError = false;
                             //   });
                             // }
-                            // if (walletType == 'Select') {
-                            //   setState(() {
-                            //     walletTypeError = true;
-                            //   });
-                            // } else {
-                            //   setState(() {
-                            //     walletTypeError = false;
-                            //   });
-                            // }
-                            // if (walletNameError == true ||
-                            //     walletTypeError == true) {
-                            //   return false;
-                            // }
-                            // _store_wallet();
+                            if (transaction_amount == 0.0) {
+                              setState(() {
+                                amountError = true;
+                              });
+                            } else {
+                              setState(() {
+                                amountError = false;
+                              });
+                            }
+
+                            if (categoryError == false &&
+                                walletError == false &&
+                                amountError == false) {
+                              _saveTransaction();
+                            }
                           },
                           child: Text(
                             'Add',
