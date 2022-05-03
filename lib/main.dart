@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'views/create_wallet.dart' as CreateWallet;
 import 'views/transactions.dart' as Transactions;
 import 'views/create_transaction.dart' as CreateTransaction;
+import 'views/quick_add_transaction.dart' as QuickAddTransaction;
 // import 'views/wallets.dart' as Wallets;
 import 'views/settings.dart' as Settings;
 import 'dart:convert';
@@ -289,10 +290,16 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: activeTransactionColor,
         child: const Icon(Icons.add),
         onPressed: () {
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //       builder: (context) => CreateTransaction.CreateTransaction()),
+          // );
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CreateTransaction.CreateTransaction()),
+                builder: (context) =>
+                    QuickAddTransaction.QuickAddTransaction()),
           );
         },
       ),
