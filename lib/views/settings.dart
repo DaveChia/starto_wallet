@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import './wallets.dart' as Wallets;
-import './repeated_transactions.dart' as RepeatedTransactions;
 import './category.dart' as Category;
+import './suggested_transactions.dart' as SuggestedTransactions;
 import 'package:starto_wallet/main.dart' as Main;
-import 'wallets.dart' as Wallets;
 
 class Settings extends StatelessWidget {
   @override
@@ -165,6 +163,36 @@ class Settings extends StatelessWidget {
                           ),
                           child: Text(
                             'Category',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              height:
+                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SuggestedTransactions
+                                    .SuggestedTransactions()),
+                          );
+                        },
+                        child: Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 1.0,
+                                color: borderColor,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Suggested Transactions',
                             style: TextStyle(
                               fontSize: 14.0,
                               height:
