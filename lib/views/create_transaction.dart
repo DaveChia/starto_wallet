@@ -131,7 +131,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
   @override
   void initState() {
     super.initState();
-    print('333 I AM STARTING create transaction');
     _loadCategoriesAndWallets();
   }
 
@@ -465,8 +464,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           setState(() {
                             transaction_category = value;
                           });
-                          print('Changed transaction_category');
-                          print(transaction_category);
                         },
                         underline: SizedBox(),
                         value: transaction_category,
@@ -830,7 +827,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           elevation: 0,
                           color: addButtonColor,
                           onPressed: () {
-                            print(selectedCustomDate);
                             if (transaction_category.name == 'Select') {
                               setState(() {
                                 categoryError = true;

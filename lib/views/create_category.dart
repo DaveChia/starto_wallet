@@ -51,7 +51,6 @@ class _CategoryState extends State<Category> {
 
       for (int i = 0; i < decodedData?.length ?? 0; i++) {
         if (decodedData[i]['name'] == new_category['name']) {
-          print('same name cannot');
           return false;
         }
       }

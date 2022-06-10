@@ -244,8 +244,6 @@ class _CreateSuggestedTransactionState
                       setState(() {
                         transaction_category = value;
                       });
-                      print('Changed transaction_category');
-                      print(transaction_category);
                     },
                     underline: SizedBox(),
                     value: transaction_category,
@@ -289,7 +287,8 @@ class _CreateSuggestedTransactionState
                   ),
                   Expanded(
                     child: TextField(
-                      controller: TextEditingController(text: ''),
+                      controller: TextEditingController(
+                          text: transaction_amount.toStringAsFixed(2)),
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.right,
                       onChanged: (content) {

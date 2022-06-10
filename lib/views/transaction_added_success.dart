@@ -20,14 +20,10 @@ class TransactionAddedSuccess extends StatelessWidget {
           padding: EdgeInsets.only(left: 20, right: 20),
           child: Column(
             children: [
+              Container(height: 130),
+              Image.asset('assets/images/quick_add_transaction_success.png'),
               Container(
-                margin: EdgeInsets.only(top: 120, bottom: 40),
-                height: 200,
-                width: 200,
-                color: Colors.green,
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: 15),
+                margin: EdgeInsets.only(top: 90, bottom: 15),
                 child: Text(
                   'Nice!',
                   textAlign: TextAlign.center,

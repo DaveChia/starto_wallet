@@ -111,9 +111,6 @@ class _QuickAddTransactionKeyState extends State<QuickAddTransactionKey> {
 
   _saveTransaction() async {
     //  Save transaction here
-    print(amount);
-    print(note);
-    print(selected_date);
 
     if (selected_date == 'Today') {
       selected_date = DateTime.now().toString();
@@ -156,8 +153,6 @@ class _QuickAddTransactionKeyState extends State<QuickAddTransactionKey> {
   }
 
   calculate(data) {
-    // print(amount.toString());
-
     if (amount == '' && data != '.' && data != 'delete') {
       amount = data;
     } else if (data == 'delete') {
@@ -625,13 +620,6 @@ class _QuickAddTransactionKeyState extends State<QuickAddTransactionKey> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget okButton = TextButton(
-      child: Text("Ok"),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
-    );
-
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text(
@@ -643,9 +631,6 @@ class _QuickAddTransactionKeyState extends State<QuickAddTransactionKey> {
         ),
       ),
       content: Text('Please include the transaction amount and description.'),
-      actions: [
-        okButton,
-      ],
     );
 
     // show the dialog

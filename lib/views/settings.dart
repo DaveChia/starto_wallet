@@ -204,82 +204,80 @@ class Settings extends StatelessWidget {
                       Container(
                         height: 32,
                       ),
-                      Container(
-                        height: 28,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 1.0,
-                              color: borderColor,
-                            ),
-                          ),
-                        ),
-                        width: double.infinity,
-                        child: Text(
-                          'General settings',
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            color: hintTextColor,
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   height: 28,
+                      //   decoration: BoxDecoration(
+                      //     border: Border(
+                      //       bottom: BorderSide(
+                      //         width: 1.0,
+                      //         color: borderColor,
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   width: double.infinity,
+                      //   child: Text(
+                      //     'General settings',
+                      //     style: TextStyle(
+                      //       fontSize: 12.0,
+                      //       color: hintTextColor,
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     print("date format was tapped");
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Date format',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     print("reminders was tapped");
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Reminders',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // Container(
+                      //   height: 32,
+                      // ),
                       GestureDetector(
-                        onTap: () {
-                          print("date format was tapped");
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Date format',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          print("reminders was tapped");
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Reminders',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 32,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          print("help faq was tapped");
-                        },
+                        onTap: () {},
                         child: Container(
                           height: 48,
                           width: double.infinity,
@@ -302,9 +300,7 @@ class Settings extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          print("feedback was tapped");
-                        },
+                        onTap: () {},
                         child: Container(
                           height: 48,
                           width: double.infinity,
@@ -327,9 +323,7 @@ class Settings extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          print("rate it was tapped");
-                        },
+                        onTap: () {},
                         child: Container(
                           height: 48,
                           width: double.infinity,

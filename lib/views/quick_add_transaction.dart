@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import './transaction_added_success.dart' as QuickAddTransactionSuccess;
 import './quick_add_transaction_key.dart' as QuickAddTransactionKey;
+// import './quick_add_transaction_key.dart' as QuickAddTransactionKey;
 import './create_category.dart' as CreateCategory;
+import '../main.dart' as Main;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -84,11 +86,13 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
 
   String selected_transaction_sub_type = 'expense';
 
-  List<Category> all_categories = [];
-
   List expense_transactions = [];
   List income_transactions = [];
   List active_transactions = [];
+
+  List expense_categories = [];
+  List income_categories = [];
+  List active_categories = [];
 
   @override
   void initState() {
@@ -224,11 +228,11 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
       expense_transactions = expense_transactions_local;
       income_transactions = income_transactions_local;
 
-      active_transactions = expense_transactions;
+      expense_categories = expense_categories_local2;
+      income_categories = income_categories_local2;
 
-      all_categories =
-          all_categories + expense_categories_local2 + income_categories_local2;
-      print(all_categories);
+      active_transactions = expense_transactions;
+      active_categories = expense_categories_local2;
     });
   }
 
@@ -242,7 +246,10 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Main.MyApp()),
+            );
           },
           icon: Icon(Icons.cancel_outlined),
         ),
@@ -287,6 +294,8 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                 onTap: () {
                                   setState(() {
                                     selected_transaction_sub_type = 'expense';
+                                    active_transactions = expense_transactions;
+                                    active_categories = expense_categories;
                                   });
                                 },
                                 child: Container(
@@ -320,6 +329,8 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                 onTap: () {
                                   setState(() {
                                     selected_transaction_sub_type = 'income';
+                                    active_transactions = income_transactions;
+                                    active_categories = income_categories;
                                   });
                                 },
                                 child: Container(
@@ -364,7 +375,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                   // Data is the value this Draggable stores.
                                   data: i.toString(),
                                   child: Container(
-                                    margin: EdgeInsets.only(right: 10),
+                                    margin: EdgeInsets.only(top: 10, right: 10),
                                     height: 36,
                                     child: Padding(
                                       padding: EdgeInsets.only(
@@ -427,11 +438,8 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                           builder: (context, List<String> candidateData,
                               rejectedData) {
                             return Center(
-                              child: Container(
-                                  height: 150.0,
-                                  width: 150.0,
-                                  color: Colors.blue,
-                                  child: Text('drop here')),
+                              child: Image.asset(
+                                  'assets/images/quick_add_transaction_drag_drop.png'),
                             );
                           },
                           onWillAccept: (data) {
@@ -458,7 +466,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                       Wrap(
                         alignment: WrapAlignment.center,
                         children: [
-                          for (var i = 0; i < all_categories.length; i++)
+                          for (var i = 0; i < active_categories.length; i++)
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -470,9 +478,9 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                             transaction_type:
                                                 selected_transaction_sub_type,
                                             category_type:
-                                                all_categories[i].type,
+                                                active_categories[i].type,
                                             category_name:
-                                                all_categories[i].name,
+                                                active_categories[i].name,
                                           )),
                                 );
                               },
@@ -488,7 +496,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                           Icons.arrow_right_sharp,
                                         ),
                                         Text(
-                                          '${all_categories[i].name.toString()[0].toUpperCase()}${all_categories[i].name.toString().substring(1)} ',
+                                          '${active_categories[i].name.toString()[0].toUpperCase()}${active_categories[i].name.toString().substring(1)} ',
                                           style: TextStyle(
                                               fontSize: 14.0,
                                               color: unselected_nav_color,

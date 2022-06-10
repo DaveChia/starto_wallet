@@ -28,7 +28,6 @@ class _WalletsState extends State<Wallets> {
   @override
   void initState() {
     super.initState();
-    print('333 I AM STARTING');
     _loadWallets();
   }
 
@@ -209,9 +208,7 @@ class _WalletsState extends State<Wallets> {
                             ),
                             for (var i = 0; i < cash_wallets.length; i++)
                               GestureDetector(
-                                onTap: () {
-                                  print(i);
-                                },
+                                onTap: () {},
                                 child: Container(
                                   height: 48,
                                   width: double.infinity,
@@ -317,9 +314,7 @@ class _WalletsState extends State<Wallets> {
                             ),
                             for (var i = 0; i < bank_wallets.length; i++)
                               GestureDetector(
-                                onTap: () {
-                                  print(i);
-                                },
+                                onTap: () {},
                                 child: Container(
                                   height: 48,
                                   width: double.infinity,
@@ -426,9 +421,7 @@ class _WalletsState extends State<Wallets> {
                                 i < credit_cards_wallets.length;
                                 i++)
                               GestureDetector(
-                                onTap: () {
-                                  print(i);
-                                },
+                                onTap: () {},
                                 child: Container(
                                   height: 48,
                                   width: double.infinity,

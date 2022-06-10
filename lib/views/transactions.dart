@@ -36,7 +36,6 @@ class _WalletsState extends State<Transactions> {
   @override
   void initState() {
     super.initState();
-    print('333 I AM STARTING');
     _loadWallets();
   }
 

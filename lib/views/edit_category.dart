@@ -39,8 +39,6 @@ class _CategoryState extends State<Category> {
       setState(() {});
       return false;
     }
-    print(originalCategoryType);
-    print(widget.category_type);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -67,7 +65,6 @@ class _CategoryState extends State<Category> {
 
         for (int i = 0; i < decodedData?.length ?? 0; i++) {
           if (decodedData[i]['name'] == new_category['name']) {
-            print('same name cannot');
             return false;
           }
         }
@@ -83,7 +80,6 @@ class _CategoryState extends State<Category> {
     } else {
       for (int i = 0; i < decodedData?.length ?? 0; i++) {
         if (decodedData[i]['name'] == categoryName) {
-          print('same name cannot');
           return false;
         }
       }

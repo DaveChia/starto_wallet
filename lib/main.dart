@@ -125,6 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return '\$' + results.toStringAsFixed(2);
   }
 
+  _format_date(String dateString) {
+    return DateFormat("yyyy-MM-dd").parse(dateString).toString();
+  }
+
   _loadTransactions() async {
     active_transactions = [];
     expense_transactions = [];
@@ -145,8 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     List all_transactions = jsonDecode(prefs.getString('transactions'));
-
-    print(all_transactions);
 
     all_transactions.forEach((transaction) {
       String transaction_month_year =
@@ -245,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var i = 0; i < active_transactions_by_category.length; i++) {
       if (i == active_transactions_by_category.length - 1) {
         active_transactions_by_category[i]['amount_percent'] =
-            100 - current_total_percent;
+            (100 - current_total_percent).toStringAsFixed(1);
         break;
       }
       active_transactions_by_category[i]['amount_percent'] =
@@ -280,7 +282,6 @@ class _MyHomePageState extends State<MyHomePage> {
             .add(temp_active_transactions[i]);
       }
     }
-    print(active_transactions);
     setState(() {});
   }
 
@@ -446,53 +447,53 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Container(
-                            height: 64,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  width: selected_transaction_type == 'transfer'
-                                      ? 2
-                                      : 1,
-                                  color: selected_transaction_type == 'transfer'
-                                      ? transfer_color
-                                      : nav_border_color,
-                                ),
-                              ),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selected_transaction_type = 'transfer';
-                                  this._loadTransactions();
-                                });
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Transfer',
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: transfer_color,
-                                    ),
-                                  ),
-                                  Text(
-                                    '\$' +
-                                        total_transfer_amount
-                                            .toStringAsFixed(2),
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: transfer_color,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Expanded(
+                        //   child: Container(
+                        //     height: 64,
+                        //     decoration: BoxDecoration(
+                        //       border: Border(
+                        //         bottom: BorderSide(
+                        //           width: selected_transaction_type == 'transfer'
+                        //               ? 2
+                        //               : 1,
+                        //           color: selected_transaction_type == 'transfer'
+                        //               ? transfer_color
+                        //               : nav_border_color,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     child: GestureDetector(
+                        //       onTap: () {
+                        //         setState(() {
+                        //           selected_transaction_type = 'transfer';
+                        //           this._loadTransactions();
+                        //         });
+                        //       },
+                        //       child: Column(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         children: [
+                        //           Text(
+                        //             'Transfer',
+                        //             style: TextStyle(
+                        //               fontSize: 14.0,
+                        //               color: transfer_color,
+                        //             ),
+                        //           ),
+                        //           Text(
+                        //             '\$' +
+                        //                 total_transfer_amount
+                        //                     .toStringAsFixed(2),
+                        //             style: TextStyle(
+                        //               fontSize: 14.0,
+                        //               fontWeight: FontWeight.bold,
+                        //               color: transfer_color,
+                        //             ),
+                        //           )
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -982,15 +983,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   Expanded(
                                                                     child: Container(
                                                                         width: double.infinity,
-                                                                        child: Text('ASOS',
+                                                                        child: Text("${active_transactions_by_category[i]['data'][j]['description'].toString()[0].toUpperCase()}${active_transactions_by_category[i]['data'][j]['description'].toString().substring(1)}",
                                                                             style: TextStyle(fontSize: 14.0, color: activeTransactionColor, height: 1.4 //HACK, need to find better way to align vertical center and horizontal center at the same time
-                                                                                ))),
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Container(
-                                                                        width: double.infinity,
-                                                                        child: Text('OCBC 365 Credit Card',
-                                                                            style: TextStyle(fontSize: 12.0, color: transferTextColor, height: 1.55 //HACK, need to find better way to align vertical center and horizontal center at the same time
                                                                                 ))),
                                                                   ),
                                                                 ],
@@ -1007,7 +1001,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                         Expanded(
                                                                           child: Container(
                                                                               width: double.infinity,
-                                                                              child: Text('S8.00',
+                                                                              child: Text('\$' + active_transactions_by_category[i]['data'][j]['amount'].toStringAsFixed(2),
                                                                                   textAlign: TextAlign.right,
                                                                                   style: TextStyle(fontSize: 14.0, color: expenseTextColor, height: 1.4 //HACK, need to find better way to align vertical center and horizontal center at the same time
                                                                                       ))),
@@ -1015,7 +1009,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                         Expanded(
                                                                           child: Container(
                                                                               width: double.infinity,
-                                                                              child: Text('28 Feb',
+                                                                              child: Text(_format_date(active_transactions_by_category[i]['data'][j]['date']),
                                                                                   textAlign: TextAlign.right,
                                                                                   style: TextStyle(fontSize: 12.0, color: transferTextColor, height: 1.55 //HACK, need to find better way to align vertical center and horizontal center at the same time
                                                                                       ))),
@@ -1030,51 +1024,51 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         ))),
                                               ),
                                             ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    top: BorderSide(
-                                                      width: 1,
-                                                      color:
-                                                          inActiveTransactionColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      print('pressedddd');
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    height: 40,
-                                                    width: double.infinity,
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                          top: 8, bottom: 12),
-                                                      child: Container(
-                                                        child: Text(
-                                                            'View all shopping transactions',
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: TextStyle(
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .underline,
-                                                                fontSize: 12.0,
-                                                                color:
-                                                                    selected_nav_color,
-                                                                height:
-                                                                    1.45 //HACK, need to find better way to align vertical center and horizontal center at the same time
-                                                                )),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )),
-                                          )
+                                          // Padding(
+                                          //   padding: EdgeInsets.symmetric(
+                                          //       horizontal: 16),
+                                          //   child: Container(
+                                          //       decoration: BoxDecoration(
+                                          //         border: Border(
+                                          //           top: BorderSide(
+                                          //             width: 1,
+                                          //             color:
+                                          //                 inActiveTransactionColor,
+                                          //           ),
+                                          //         ),
+                                          //       ),
+                                          //       child: GestureDetector(
+                                          //         onTap: () {
+                                          //           setState(() {
+                                          //             print('pressedddd');
+                                          //           });
+                                          //         },
+                                          //         child: Container(
+                                          //           height: 40,
+                                          //           width: double.infinity,
+                                          //           child: Padding(
+                                          //             padding: EdgeInsets.only(
+                                          //                 top: 8, bottom: 12),
+                                          //             child: Container(
+                                          //               child: Text(
+                                          //                   'View all shopping transactions',
+                                          //                   textAlign: TextAlign
+                                          //                       .center,
+                                          //                   style: TextStyle(
+                                          //                       decoration:
+                                          //                           TextDecoration
+                                          //                               .underline,
+                                          //                       fontSize: 12.0,
+                                          //                       color:
+                                          //                           selected_nav_color,
+                                          //                       height:
+                                          //                           1.45 //HACK, need to find better way to align vertical center and horizontal center at the same time
+                                          //                       )),
+                                          //             ),
+                                          //           ),
+                                          //         ),
+                                          //       )),
+                                          // )
                                         ],
                                       ),
                                     ),

@@ -42,9 +42,8 @@ class _WalletState extends State<Wallet> {
   @override
   void initState() {
     super.initState();
-    print('333222 I AM STARTING');
     walletName = widget.editWallet['name'];
-    print(widget.editWallet);
+
     if (widget.type == 'credit_card') {
       availableCredit = double.parse(widget.editWallet['available_credit']);
       creditCardPaymentDay = widget.editWallet['credit_card_payment_day'];
@@ -174,7 +173,6 @@ class _WalletState extends State<Wallet> {
 
     for (int i = 0; i < decodedData?.length ?? 0; i++) {
       if (decodedData[i]['name'] == walletName && i != widget.walletIndex) {
-        print('same name cannot');
         return false;
       }
     }

@@ -14,7 +14,6 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
   @override
   void initState() {
     super.initState();
-    print('333 I AM STARTING');
     _loadTransactions();
   }
 
@@ -164,8 +163,6 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
       transactions_income = transactions_income_local;
       transactions_expense = transactions_expense_local;
     });
-
-    print(transactions_income[0]);
   }
 
   @override
@@ -189,9 +186,7 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
               Icons.delete,
               color: addIconColor,
             ),
-            onPressed: () {
-              print('delete transactions');
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: Icon(
@@ -236,9 +231,7 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
                 ),
                 for (var transaction in transactions_income)
                   GestureDetector(
-                    onTap: () {
-                      print("repeated transactions was tapped");
-                    },
+                    onTap: () {},
                     child: Container(
                       height: 56,
                       decoration: BoxDecoration(
@@ -362,9 +355,7 @@ class _RepeatedTransactionsState extends State<RepeatedTransactions> {
                 ),
                 for (var transaction in transactions_expense)
                   GestureDetector(
-                    onTap: () {
-                      print("repeated transactions was tapped");
-                    },
+                    onTap: () {},
                     child: Container(
                       height: 56,
                       decoration: BoxDecoration(

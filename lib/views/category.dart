@@ -42,7 +42,6 @@ class _CategoryState extends State<Category> {
   @override
   void initState() {
     super.initState();
-    print('333 I AM STARTING');
     _loadCategories();
   }
 
@@ -121,8 +120,6 @@ class _CategoryState extends State<Category> {
   }
 
   _deleteCategory(category_index) async {
-    print(active_categories);
-
     switch (selectedCategory) {
       case 'expense':
         expense_categories.removeAt(category_index);
@@ -363,42 +360,42 @@ class _CategoryState extends State<Category> {
                     ),
                   ),
                 ),
-                if (isEditMode == false)
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = 'transfer';
-                          active_categories = transfer_categories;
-                        });
-                      },
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: selectedCategory == 'transfer' ? 2 : 0.5,
-                              color: selectedCategory == 'transfer'
-                                  ? activeCategoryColor
-                                  : inActiveCategoryColor,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          'Transfer',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: selectedCategory == 'transfer'
-                                ? whenButtonActiveColor
-                                : whenButtonInactiveTextColor,
-                            fontSize: 14.0,
-                            height:
-                                2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                // if (isEditMode == false)
+                //   Expanded(
+                //     child: GestureDetector(
+                //       onTap: () {
+                //         setState(() {
+                //           selectedCategory = 'transfer';
+                //           active_categories = transfer_categories;
+                //         });
+                //       },
+                //       child: Container(
+                //         height: 50,
+                //         decoration: BoxDecoration(
+                //           border: Border(
+                //             bottom: BorderSide(
+                //               width: selectedCategory == 'transfer' ? 2 : 0.5,
+                //               color: selectedCategory == 'transfer'
+                //                   ? activeCategoryColor
+                //                   : inActiveCategoryColor,
+                //             ),
+                //           ),
+                //         ),
+                //         child: Text(
+                //           'Transfer',
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //             color: selectedCategory == 'transfer'
+                //                 ? whenButtonActiveColor
+                //                 : whenButtonInactiveTextColor,
+                //             fontSize: 14.0,
+                //             height:
+                //                 2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
               ]),
             ),
             Padding(
@@ -602,8 +599,6 @@ class _CategoryState extends State<Category> {
                         // The reorder function
                         onReorder: (oldIndex, newIndex) async {
                           if (isFilterSearchMode == true) return;
-
-                          print('checking');
                           if (newIndex > oldIndex) {
                             newIndex -= 1;
                           }

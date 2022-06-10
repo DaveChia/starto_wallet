@@ -181,7 +181,6 @@ class _WalletState extends State<Wallet> {
 
       for (int i = 0; i < decodedData?.length ?? 0; i++) {
         if (decodedData[i]['name'] == new_wallet['name']) {
-          print('same name cannot');
           return false;
         }
       }
