@@ -796,13 +796,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               ),
                                                               Container(
                                                                 child: Text(
-                                                                  active_transactions[
-                                                                          i][active_transactions[
-                                                                              i]
-                                                                          .keys
-                                                                          .toList()
-                                                                          .first][j]['description']
-                                                                      .toString(),
+                                                                  "${active_transactions[i][active_transactions[i].keys.toList().first][j]['description'].toString()[0].toUpperCase()}${active_transactions[i][active_transactions[i].keys.toList().first][j]['description'].toString().substring(1)}",
                                                                   textAlign:
                                                                       TextAlign
                                                                           .right,

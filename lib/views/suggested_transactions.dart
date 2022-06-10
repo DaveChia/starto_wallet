@@ -292,13 +292,13 @@ class _SuggestedTransactionsState extends State<SuggestedTransactions> {
       child: Text("Delete now"),
       onPressed: () {
         _deleteCategory(suggested_transaction_index);
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       },
     );
     Widget cancelButton = TextButton(
       child: Text("Cancel"),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       },
     );
 

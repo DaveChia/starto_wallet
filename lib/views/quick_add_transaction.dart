@@ -241,19 +241,41 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text('Add Transaction'),
-        centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Main.MyApp()),
-            );
-          },
-          icon: Icon(Icons.cancel_outlined),
-        ),
-      ),
+          title: Text('Add Transaction'),
+          centerTitle: true,
+          elevation: 0,
+          leading: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Main.MyApp()),
+                );
+              },
+              child: Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Container(
+                  child: Text(
+                    'Cancel',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: hintTextColor,
+                      height:
+                          2.65, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                    ),
+                  ),
+                ),
+              ))
+          // leading: IconButton(
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => Main.MyApp()),
+          //     );
+          //   },
+          //   icon: Icon(Icons.cancel_outlined),
+          // ),
+          ),
       body: Center(
         child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),

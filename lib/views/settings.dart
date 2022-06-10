@@ -276,67 +276,67 @@ class Settings extends StatelessWidget {
                       // Container(
                       //   height: 32,
                       // ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Help/FAQ',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 1.0,
-                                color: borderColor,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            'Feedback',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 48,
-                          width: double.infinity,
-                          child: Text(
-                            'Rate it',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              height:
-                                  2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
-                            ),
-                          ),
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {},
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Help/FAQ',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {},
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       border: Border(
+                      //         bottom: BorderSide(
+                      //           width: 1.0,
+                      //           color: borderColor,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //       'Feedback',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {},
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.infinity,
+                      //     child: Text(
+                      //       'Rate it',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         height:
+                      //             2.5, //HACK, need to find better way to align vertical center and horizontal center at the same time
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ]),
                   ]),
                 ),
