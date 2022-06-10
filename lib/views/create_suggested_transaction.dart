@@ -343,7 +343,7 @@ class _CreateSuggestedTransactionState
                   ),
                   Expanded(
                     child: TextField(
-                      controller: TextEditingController(text: ''),
+                      controller: TextEditingController(text: transaction_name),
                       textAlign: TextAlign.right,
                       onChanged: (content) {
                         transaction_name = content;
