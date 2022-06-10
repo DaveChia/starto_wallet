@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'views/create_wallet.dart' as CreateWallet;
 import 'views/transactions.dart' as Transactions;
@@ -13,7 +14,11 @@ import "package:collection/collection.dart";
 SharedPreferences sp;
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(new MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -140,6 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     List all_transactions = jsonDecode(prefs.getString('transactions'));
+
+    print(all_transactions);
 
     all_transactions.forEach((transaction) {
       String transaction_month_year =

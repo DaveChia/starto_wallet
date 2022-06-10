@@ -11,6 +11,38 @@ class QuickAddTransaction extends StatefulWidget {
   _QuickAddTransactionState createState() => _QuickAddTransactionState();
 }
 
+class Transaction {
+  final double amount;
+  final Category category;
+  // final Wallet wallet;
+  final String description;
+  final DateTime date;
+
+  Transaction(
+      {@required this.amount,
+      @required this.category,
+      // @required this.wallet,
+      @required this.description,
+      @required this.date});
+
+  Transaction.fromJson(Map<String, dynamic> json)
+      : amount = json['amount'],
+        category = json['category'],
+        // wallet = json['wallet'],
+        description = json['description'],
+        date = json['date'];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'category': category.toJson(),
+      // 'wallet': wallet.toJson(),
+      'description': description,
+      'date': date.toString(),
+    };
+  }
+}
+
 class Category {
   final String name;
   final String type;
@@ -52,12 +84,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
 
   String selected_transaction_sub_type = 'expense';
 
-  List<Category> all_categories = [
-    Category(
-      name: 'Select',
-      type: '-',
-    ),
-  ];
+  List<Category> all_categories = [];
 
   List expense_transactions = [];
   List income_transactions = [];
@@ -67,6 +94,49 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
   void initState() {
     super.initState();
     _loadSuggestedTransactionsAndCategories();
+  }
+
+  _saveTransaction(data) async {
+    //  Save transaction here
+    DateTime selected_date = DateTime.now();
+
+    var transaction_data = active_transactions[int.parse(data)];
+
+    Category transaction_data_category = Category(
+        name: transaction_data['category']['name'],
+        type: transaction_data['category']['type']);
+
+    final new_transaction = Transaction(
+        amount: transaction_data['price'],
+        category: transaction_data_category,
+        description: transaction_data['note'],
+        date: selected_date);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Fetch and decode data
+    final String existing_transactions = await prefs.getString('transactions');
+
+    if (existing_transactions == null) {
+      var encodedData = [new_transaction.toJson()];
+
+      var stringList = jsonEncode(encodedData);
+
+      prefs.setString('transactions', stringList);
+    } else {
+      var decodedData = jsonDecode(existing_transactions);
+
+      decodedData.add(new_transaction.toJson());
+      var stringList = jsonEncode(decodedData);
+      prefs.setString('transactions', stringList);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              QuickAddTransactionSuccess.TransactionAddedSuccess()),
+    );
   }
 
   _loadSuggestedTransactionsAndCategories() async {
@@ -292,7 +362,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                   i++)
                                 Draggable(
                                   // Data is the value this Draggable stores.
-                                  data: 'text',
+                                  data: i.toString(),
                                   child: Container(
                                     margin: EdgeInsets.only(right: 10),
                                     height: 36,
@@ -321,24 +391,21 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                       padding: EdgeInsets.only(
                                           left: 10, right: 10, top: 8),
                                       child: Text(
-                                        'MRT \$2',
+                                        '${active_transactions[i]['note'].toString()[0].toUpperCase()}${active_transactions[i]['note'].toString().substring(1)} \$${active_transactions[i]['price'].toStringAsFixed(2)}',
                                         style: TextStyle(
-                                            decoration: TextDecoration.none,
                                             fontSize: 14.0,
                                             color: unselected_nav_color),
                                       ),
                                     ),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(18),
+                                      color: backgroundColor,
                                       border: Border.all(
                                         width: 1.0,
                                         color: transfer_color,
                                       ),
                                     ),
                                   ),
-                                  childWhenDragging: Container(
-                                      // height: 36,
-                                      ),
                                 ),
                               Container(
                                   alignment: Alignment.center,
@@ -371,14 +438,7 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                             return true;
                           },
                           onAccept: (data) {
-                            print(data);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      QuickAddTransactionSuccess
-                                          .TransactionAddedSuccess()),
-                            );
+                            _saveTransaction(data);
                           },
                         ),
                       ),
@@ -406,7 +466,14 @@ class _QuickAddTransactionState extends State<QuickAddTransaction> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           QuickAddTransactionKey
-                                              .QuickAddTransactionKey()),
+                                              .QuickAddTransactionKey(
+                                            transaction_type:
+                                                selected_transaction_sub_type,
+                                            category_type:
+                                                all_categories[i].type,
+                                            category_name:
+                                                all_categories[i].name,
+                                          )),
                                 );
                               },
                               child: Container(
